@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FBG Market Filter Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark">FBG</div>
+        <div>
+          <p class="brand-overline">Fanatics Betting and Gaming</p>
+          <h1>Market Filter Studio</h1>
+        </div>
+      </div>
+      <p class="topbar-note">Internal use • State + demo-ready market slicing</p>
+    </header>
+
+    <main class="layout">
+      <aside class="filters card">
+        <h2>Smart Filters</h2>
+
+        <label class="field">
+          <span>Search state</span>
+          <input type="text" id="search" placeholder="Ex: Texas" />
+        </label>
+
+        <label class="field">
+          <span>Sports betting status</span>
+          <select id="sportsStatus">
+            <option value="all">All</option>
+            <option value="legal">Legal</option>
+            <option value="illegal">Illegal</option>
+            <option value="limited">Limited / Retail-only</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>iGaming</span>
+          <select id="igamingStatus">
+            <option value="all">All</option>
+            <option value="yes">Legal</option>
+            <option value="no">Not legal</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Region</span>
+          <select id="region">
+            <option value="all">All regions</option>
+            <option value="Northeast">Northeast</option>
+            <option value="South">South</option>
+            <option value="Midwest">Midwest</option>
+            <option value="West">West</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Tax rate (max %)</span>
+          <input type="range" id="taxMax" min="0" max="60" value="60" />
+          <small id="taxMaxLabel">60%</small>
+        </label>
+
+        <div class="quick-presets">
+          <span>Demo presets</span>
+          <div class="preset-grid">
+            <button data-preset="launch-now">Launch-Now States</button>
+            <button data-preset="igaming-focus">iGaming Focus</button>
+            <button data-preset="high-tax">High Tax Risk</button>
+            <button data-preset="college-safe">College-Friendly</button>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="resetBtn" class="ghost">Reset</button>
+          <button id="copyBtn">Copy view summary</button>
+        </div>
+      </aside>
+
+      <section class="results">
+        <div class="kpis">
+          <article class="card kpi">
+            <p>States in view</p>
+            <h3 id="statesCount">0</h3>
+          </article>
+          <article class="card kpi">
+            <p>Legal online sports</p>
+            <h3 id="onlineCount">0</h3>
+          </article>
+          <article class="card kpi">
+            <p>iGaming legal</p>
+            <h3 id="igamingCount">0</h3>
+          </article>
+        </div>
+
+        <article class="card table-card">
+          <div class="table-head">
+            <h2>State Market View</h2>
+            <p id="activeFilterText">No filters applied.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Region</th>
+                  <th>Sports</th>
+                  <th>Online</th>
+                  <th>iGaming</th>
+                  <th>Tax %</th>
+                  <th>College Betting</th>
+                </tr>
+              </thead>
+              <tbody id="stateRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -65,6 +65,22 @@ function badgeForSports(sports) {
   return `<span class="pill illegal">Illegal</span>`;
 }
 
+function displayOnline(row) {
+  if (!row.online) return "No";
+  return row.onlineNote ? `Yes (${row.onlineNote})` : "Yes";
+}
+
+function displayIGaming(row) {
+  if (row.igamingStatus === "pending") return "Pending";
+  return row.igaming ? "Yes" : "No";
+}
+
+function displayTax(row) {
+  if (row.tax === null) return "N/A";
+  if (row.taxNote) return `${row.tax}% (${row.taxNote})`;
+  return `${row.tax}%`;
+}
+
 function renderRows(rows) {
   if (!rows.length) {
     elements.rows.innerHTML = `<tr><td colspan="7" class="empty">No states matched. Try broadening the filters.</td></tr>`;
@@ -78,9 +94,9 @@ function renderRows(rows) {
         <td>${row.state}</td>
         <td>${row.region}</td>
         <td>${badgeForSports(row.sports)}</td>
-        <td>${row.online ? "Yes" : "No"}</td>
-        <td>${row.igaming ? "Yes" : "No"}</td>
-        <td>${row.tax === null ? "N/A" : row.tax + "%"}</td>
+        <td>${displayOnline(row)}</td>
+        <td>${displayIGaming(row)}</td>
+        <td>${displayTax(row)}</td>
         <td>${row.college}</td>
       </tr>`
     )

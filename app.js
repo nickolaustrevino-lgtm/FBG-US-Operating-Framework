@@ -20,7 +20,12 @@ const defaultFilters = {
   sportsStatus: "all",
   igamingStatus: "all",
   region: "all",
+  taxMin: 0,
   taxMax: 60
+};
+
+const hiddenFilters = {
+  taxMin: defaultFilters.taxMin
 };
 
 function getFilters() {
@@ -29,6 +34,7 @@ function getFilters() {
     sportsStatus: elements.sportsStatus.value,
     igamingStatus: elements.igamingStatus.value,
     region: elements.region.value,
+    taxMin: hiddenFilters.taxMin,
     taxMax: Number(elements.taxMax.value)
   };
 }
@@ -42,6 +48,7 @@ function runFilter(data, filters) {
       if (row.igaming !== shouldHaveIGaming) return false;
     }
     if (filters.region !== "all" && row.region !== filters.region) return false;
+    if (row.tax !== null && row.tax < filters.taxMin) return false;
     if (row.tax !== null && row.tax > filters.taxMax) return false;
     return true;
   });
@@ -87,6 +94,7 @@ function renderFilterText(filters) {
   if (filters.sportsStatus !== "all") parts.push(`Sports: ${filters.sportsStatus}`);
   if (filters.igamingStatus !== "all") parts.push(`iGaming: ${filters.igamingStatus}`);
   if (filters.region !== "all") parts.push(`Region: ${filters.region}`);
+  if (filters.taxMin > 0) parts.push(`Min tax: ${filters.taxMin}%`);
   if (filters.taxMax < 60) parts.push(`Max tax: ${filters.taxMax}%`);
 
   elements.activeFilterText.textContent = parts.length ? parts.join(" • ") : "No filters applied.";
@@ -102,6 +110,7 @@ function render() {
 }
 
 function setFilters(newFilters) {
+  hiddenFilters.taxMin = newFilters.taxMin ?? defaultFilters.taxMin;
   elements.search.value = newFilters.search;
   elements.sportsStatus.value = newFilters.sportsStatus;
   elements.igamingStatus.value = newFilters.igamingStatus;
@@ -114,7 +123,7 @@ function applyPreset(name) {
   const presets = {
     "launch-now": { ...defaultFilters, sportsStatus: "legal" },
     "igaming-focus": { ...defaultFilters, igamingStatus: "yes" },
-    "high-tax": { ...defaultFilters, taxMax: 20 },
+    "high-tax": { ...defaultFilters, taxMin: 20, taxMax: 60 },
     "college-safe": { ...defaultFilters, sportsStatus: "legal", search: "" }
   };
 

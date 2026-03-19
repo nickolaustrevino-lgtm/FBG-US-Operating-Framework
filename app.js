@@ -9,14 +9,20 @@ const elements = {
   taxMaxLabel: document.getElementById("taxMaxLabel"),
   rows: document.getElementById("stateRows"),
   statesCount: document.getElementById("statesCount"),
+  statesMeta: document.getElementById("statesMeta"),
   onlineCount: document.getElementById("onlineCount"),
+  onlineMeta: document.getElementById("onlineMeta"),
   igamingCount: document.getElementById("igamingCount"),
+  igamingMeta: document.getElementById("igamingMeta"),
+  derivedStats: document.getElementById("derivedStats"),
   activeFilterText: document.getElementById("activeFilterText"),
   activeFilterChips: document.getElementById("activeFilterChips"),
+  presetNarrative: document.getElementById("presetNarrative"),
   resetBtn: document.getElementById("resetBtn"),
   copyBtn: document.getElementById("copyBtn"),
   copyToast: document.getElementById("copyToast"),
-  presetButtons: document.querySelectorAll("[data-preset]")
+  presetButtons: document.querySelectorAll("[data-preset]"),
+  tableSummaryRow: document.getElementById("tableSummaryRow")
 };
 
 const defaultFilters = {
@@ -35,6 +41,8 @@ const hiddenFilters = {
   collegeAllowedOnly: defaultFilters.collegeAllowedOnly,
   taxMin: defaultFilters.taxMin
 };
+
+let activePreset = "none";
 
 function getFilters() {
   return {
@@ -97,11 +105,20 @@ function displayTax(row) {
 }
 
 function displayFanatics(value) {
-  return value ? "Live" : "Not live";
+  if (value) return `<span class="pill fanatics-live">Live</span>`;
+  return `<span class="pill fanatics-off">Not live</span>`;
 }
 
 function displayHandleTier(row) {
   return row.handleTier || "N/A";
+}
+
+function taxBandClass(tax) {
+  if (tax === null) return "";
+  if (tax >= 36) return "tax-high";
+  if (tax >= 20) return "tax-mid";
+  if (tax < 15) return "tax-low";
+  return "";
 }
 
 function escapeHtml(value) {
@@ -130,7 +147,7 @@ function renderRows(rows) {
         <td>${displayIGaming(row)}</td>
         <td>${displayFanatics(Boolean(row.fanaticsSportsbook))}</td>
         <td>${displayFanatics(Boolean(row.fanaticsCasino))}</td>
-        <td>${displayTax(row)}</td>
+        <td class="${taxBandClass(row.tax)}">${displayTax(row)}</td>
         <td>${displayHandleTier(row)}</td>
         <td>${row.college}</td>
       </tr>`
@@ -139,9 +156,58 @@ function renderRows(rows) {
 }
 
 function renderKPIs(rows) {
+  const totalJurisdictions = stateData.length;
+  const legalOnlineStates = rows.filter((r) => r.online && r.sports === "legal");
+  const igamingLiveStates = rows.filter((r) => r.igaming);
+
   elements.statesCount.textContent = rows.length;
-  elements.onlineCount.textContent = rows.filter((r) => r.online).length;
-  elements.igamingCount.textContent = rows.filter((r) => r.igaming).length;
+  elements.statesMeta.textContent = `of ${totalJurisdictions} total jurisdictions`;
+
+  elements.onlineCount.textContent = legalOnlineStates.length;
+  elements.onlineMeta.textContent = rows.length
+    ? `${Math.round((legalOnlineStates.length / rows.length) * 100)}% of current view`
+    : "0% of current view";
+
+  elements.igamingCount.textContent = igamingLiveStates.length;
+  elements.igamingMeta.textContent = rows.length
+    ? `${Math.round((igamingLiveStates.length / rows.length) * 100)}% of current view`
+    : "0% of current view";
+}
+
+function renderDerivedStats(rows) {
+  const legalOnlineCount = rows.filter((r) => r.online && r.sports === "legal").length;
+  const igamingLiveCount = rows.filter((r) => r.igaming).length;
+  const taxes = rows.filter((r) => r.tax !== null).map((r) => r.tax);
+  const highestTax = taxes.length ? Math.max(...taxes) : null;
+  const igamingShare = legalOnlineCount ? Math.round((igamingLiveCount / legalOnlineCount) * 100) : 0;
+
+  elements.derivedStats.textContent = `Share of legal-online states with iGaming live: ${igamingLiveCount}/${legalOnlineCount || 0} (${igamingShare}%). Highest tax in view: ${highestTax === null ? "N/A" : `${highestTax}%`}.`;
+}
+
+function renderPresetNarrative() {
+  const narratives = {
+    none: "Preset story: select a demo preset to load a narrative-backed market slice.",
+    "launch-now":
+      "Launch-Now focus: legal online states where Fanatics Sportsbook is already live, with manageable tax and meaningful market scale (T1/T2).",
+    "igaming-focus":
+      "iGaming Focus: states where online casino is legal to highlight sportsbook-to-casino cross-sell opportunities.",
+    "high-tax":
+      "High Tax Risk: high-tax environments that may compress margin and require different promo/pricing strategy.",
+    "college-safe":
+      "College-Friendly: legal online states with college betting allowed to support compliant college-themed campaigns."
+  };
+
+  elements.presetNarrative.textContent = narratives[activePreset] || narratives.none;
+}
+
+function renderTableSummary(rows) {
+  const taxRows = rows.filter((r) => r.tax !== null);
+  const averageTax = taxRows.length ? (taxRows.reduce((sum, row) => sum + row.tax, 0) / taxRows.length).toFixed(1) : "N/A";
+  const liveSportsbook = rows.filter((r) => r.fanaticsSportsbook).length;
+  const liveCasino = rows.filter((r) => r.fanaticsCasino).length;
+  const collegeAllowed = rows.filter((r) => r.college === "Allowed").length;
+
+  elements.tableSummaryRow.innerHTML = `<td colspan="10">Avg tax: ${averageTax === "N/A" ? averageTax : `${averageTax}%`} • Jurisdictions: ${rows.length} • Live sportsbook: ${liveSportsbook} • Live casino: ${liveCasino} • College allowed: ${collegeAllowed}</td>`;
 }
 
 function renderFilterText(filters) {
@@ -167,7 +233,10 @@ function render() {
   const filtered = runFilter(stateData, filters);
   renderRows(filtered);
   renderKPIs(filtered);
+  renderDerivedStats(filtered);
   renderFilterText(filters);
+  renderPresetNarrative();
+  renderTableSummary(filtered);
   elements.taxMaxLabel.textContent = `${filters.taxMax}%`;
 }
 
@@ -185,10 +254,11 @@ function setFilters(newFilters) {
 }
 
 function applyPreset(name) {
+  activePreset = name;
   const presets = {
-    "launch-now": { ...defaultFilters, sportsStatus: "legal" },
+    "launch-now": { ...defaultFilters, sportsStatus: "legal", fanaticsSportsbook: "yes", taxMax: 20 },
     "igaming-focus": { ...defaultFilters, igamingStatus: "yes" },
-    "high-tax": { ...defaultFilters, taxMin: 20, taxMax: 60 },
+    "high-tax": { ...defaultFilters, taxMin: 36, taxMax: 60 },
     "college-safe": { ...defaultFilters, sportsStatus: "legal", collegeAllowedOnly: true, search: "" }
   };
 
@@ -210,7 +280,16 @@ function showCopyToast(message, isError = false) {
 async function copySummary() {
   const filters = getFilters();
   const filtered = runFilter(stateData, filters);
-  const summary = `FBG Market Filter Studio\nStates: ${filtered.length}\nOnline sports: ${filtered.filter((r) => r.online).length}\niGaming: ${filtered.filter((r) => r.igaming).length}\nFilters: ${elements.activeFilterText.textContent}`;
+  const onlineSports = filtered.filter((r) => r.online && r.sports === "legal").length;
+  const igamingLive = filtered.filter((r) => r.igaming).length;
+  const taxRows = filtered.filter((r) => r.tax !== null);
+  const avgTax = taxRows.length ? (taxRows.reduce((sum, row) => sum + row.tax, 0) / taxRows.length).toFixed(1) : "N/A";
+  const tierMix = {
+    T1: filtered.filter((r) => r.handleTier === "T1").length,
+    T2: filtered.filter((r) => r.handleTier === "T2").length,
+    T3: filtered.filter((r) => r.handleTier === "T3").length
+  };
+  const summary = `Filter: ${elements.activeFilterText.textContent}. ${filtered.length} jurisdictions in view, ${onlineSports} legal online sports, ${igamingLive} iGaming live, avg tax ${avgTax === "N/A" ? avgTax : `${avgTax}%`}, tier mix: ${tierMix.T1} T1 / ${tierMix.T2} T2 / ${tierMix.T3} T3.`;
 
   try {
     await navigator.clipboard.writeText(summary);
@@ -237,8 +316,14 @@ async function copySummary() {
   elements.fanaticsCasino,
   elements.taxMax
 ].forEach((element) => {
-  element.addEventListener("input", render);
-  element.addEventListener("change", render);
+  element.addEventListener("input", () => {
+    activePreset = "none";
+    render();
+  });
+  element.addEventListener("change", () => {
+    activePreset = "none";
+    render();
+  });
 });
 
 elements.resetBtn.addEventListener("click", () => setFilters(defaultFilters));

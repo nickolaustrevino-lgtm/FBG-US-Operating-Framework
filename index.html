@@ -24,9 +24,20 @@
       <p class="topbar-note">Internal use • State + demo-ready market slicing</p>
     </header>
 
+    <section class="card intro-card">
+      <h2>What this is</h2>
+      <p>
+        Tool to slice U.S. states by legalization, product, tax, handle tier, and Fanatics footprint to prioritize launch and investment decisions.
+      </p>
+      <p><strong>How to use:</strong> pick a preset to start a strategy story, then refine with filters and copy the KPI summary for deck-ready commentary.</p>
+    </section>
+
     <main class="layout">
       <aside class="filters card">
         <h2>Smart Filters</h2>
+        <p class="filter-help">
+          Use filters to answer: where we can launch now, where iGaming cross-sell exists, and where high-handle states carry higher tax burden.
+        </p>
 
         <label class="field">
           <span>Search state</span>
@@ -83,7 +94,7 @@
         </label>
 
         <label class="field">
-          <span>Tax rate (max %)</span>
+          <span>Max tax rate (% of GGR or equivalent)</span>
           <input type="range" id="taxMax" min="0" max="60" value="60" />
           <small id="taxMaxLabel">60%</small>
         </label>
@@ -96,6 +107,9 @@
             <button data-preset="high-tax">High Tax Risk</button>
             <button data-preset="college-safe">College-Friendly</button>
           </div>
+          <p id="presetNarrative" class="preset-narrative">
+            Preset story: select a demo preset to load a narrative-backed market slice.
+          </p>
         </div>
 
         <div class="action-row">
@@ -109,16 +123,20 @@
           <article class="card kpi">
             <p>Jurisdictions in view</p>
             <h3 id="statesCount">0</h3>
+            <small id="statesMeta">of 51 total jurisdictions</small>
           </article>
           <article class="card kpi">
             <p>Legal online sports</p>
             <h3 id="onlineCount">0</h3>
+            <small id="onlineMeta">0% of current view</small>
           </article>
           <article class="card kpi">
             <p>iGaming legal</p>
             <h3 id="igamingCount">0</h3>
+            <small id="igamingMeta">0% of current view</small>
           </article>
         </div>
+        <p id="derivedStats" class="derived-stats"></p>
 
         <article class="card table-card">
           <div class="table-head">
@@ -143,9 +161,24 @@
                 </tr>
               </thead>
               <tbody id="stateRows"></tbody>
+              <tfoot>
+                <tr id="tableSummaryRow" class="table-summary-row"></tr>
+              </tfoot>
             </table>
           </div>
         </article>
+
+        <section class="card glossary-card">
+          <h3>Glossary</h3>
+          <ul>
+            <li><strong>Sports:</strong> whether online sports betting is legal.</li>
+            <li><strong>Online:</strong> whether remote betting is allowed vs retail-only/state-run.</li>
+            <li><strong>iGaming:</strong> whether online casino/poker is legal (or pending).</li>
+            <li><strong>Tax %:</strong> effective operator tax (Tennessee uses handle tax).</li>
+            <li><strong>Handle Tier:</strong> relative annual handle grouping (T1/T2/T3).</li>
+          </ul>
+          <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling, not statutory legal advice.</p>
+        </section>
       </section>
     </main>
 

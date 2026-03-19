@@ -22,8 +22,8 @@ body {
 .topbar {
   background: var(--fbg-black);
   color: #fff;
-  padding: 1rem 1.5rem;
-  border-bottom: 4px solid var(--fbg-red);
+  padding: 0.4rem 0.8rem;
+  border-bottom: 2px solid var(--fbg-red);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -38,10 +38,10 @@ body {
 }
 
 .brand-logo {
-  width: 72px;
-  height: 72px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
-  border-radius: 0.4rem;
+  border-radius: 0.2rem;
 }
 
 .brand-titles {
@@ -51,7 +51,7 @@ body {
 
 .brand-overline {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.64rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   opacity: 0.85;
@@ -65,11 +65,11 @@ p {
 }
 
 h1 {
-  font-size: 1.3rem;
+  font-size: 1.02rem;
 }
 
 .topbar-note {
-  font-size: 0.85rem;
+  font-size: 0.74rem;
   opacity: 0.82;
 }
 

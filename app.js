@@ -3,6 +3,8 @@ const elements = {
   sportsStatus: document.getElementById("sportsStatus"),
   igamingStatus: document.getElementById("igamingStatus"),
   region: document.getElementById("region"),
+  fanaticsSportsbook: document.getElementById("fanaticsSportsbook"),
+  fanaticsCasino: document.getElementById("fanaticsCasino"),
   taxMax: document.getElementById("taxMax"),
   taxMaxLabel: document.getElementById("taxMaxLabel"),
   rows: document.getElementById("stateRows"),
@@ -22,6 +24,8 @@ const defaultFilters = {
   sportsStatus: "all",
   igamingStatus: "all",
   region: "all",
+  fanaticsSportsbook: "all",
+  fanaticsCasino: "all",
   collegeAllowedOnly: false,
   taxMin: 0,
   taxMax: 60
@@ -38,6 +42,8 @@ function getFilters() {
     sportsStatus: elements.sportsStatus.value,
     igamingStatus: elements.igamingStatus.value,
     region: elements.region.value,
+    fanaticsSportsbook: elements.fanaticsSportsbook.value,
+    fanaticsCasino: elements.fanaticsCasino.value,
     collegeAllowedOnly: hiddenFilters.collegeAllowedOnly,
     taxMin: hiddenFilters.taxMin,
     taxMax: Number(elements.taxMax.value)
@@ -53,6 +59,14 @@ function runFilter(data, filters) {
       if (row.igaming !== shouldHaveIGaming) return false;
     }
     if (filters.region !== "all" && row.region !== filters.region) return false;
+    if (filters.fanaticsSportsbook !== "all") {
+      const shouldHaveFanaticsSportsbook = filters.fanaticsSportsbook === "yes";
+      if (Boolean(row.fanaticsSportsbook) !== shouldHaveFanaticsSportsbook) return false;
+    }
+    if (filters.fanaticsCasino !== "all") {
+      const shouldHaveFanaticsCasino = filters.fanaticsCasino === "yes";
+      if (Boolean(row.fanaticsCasino) !== shouldHaveFanaticsCasino) return false;
+    }
     if (filters.collegeAllowedOnly && row.college !== "Allowed") return false;
     if (row.tax !== null && row.tax < filters.taxMin) return false;
     if (row.tax !== null && row.tax > filters.taxMax) return false;
@@ -82,6 +96,10 @@ function displayTax(row) {
   return `${row.tax}%`;
 }
 
+function displayFanatics(value) {
+  return value ? "Live" : "Not live";
+}
+
 function displayHandleTier(row) {
   return row.handleTier || "N/A";
 }
@@ -97,7 +115,7 @@ function escapeHtml(value) {
 
 function renderRows(rows) {
   if (!rows.length) {
-    elements.rows.innerHTML = `<tr><td colspan="8" class="empty">No states matched. Try broadening the filters.</td></tr>`;
+    elements.rows.innerHTML = `<tr><td colspan="10" class="empty">No states matched. Try broadening the filters.</td></tr>`;
     return;
   }
 
@@ -110,6 +128,8 @@ function renderRows(rows) {
         <td>${badgeForSports(row.sports)}</td>
         <td>${displayOnline(row)}</td>
         <td>${displayIGaming(row)}</td>
+        <td>${displayFanatics(Boolean(row.fanaticsSportsbook))}</td>
+        <td>${displayFanatics(Boolean(row.fanaticsCasino))}</td>
         <td>${displayTax(row)}</td>
         <td>${displayHandleTier(row)}</td>
         <td>${row.college}</td>
@@ -130,6 +150,8 @@ function renderFilterText(filters) {
   if (filters.sportsStatus !== "all") parts.push(`Sports: ${filters.sportsStatus}`);
   if (filters.igamingStatus !== "all") parts.push(`iGaming: ${filters.igamingStatus}`);
   if (filters.region !== "all") parts.push(`Region: ${filters.region}`);
+  if (filters.fanaticsSportsbook !== "all") parts.push(`Fanatics Sportsbook: ${filters.fanaticsSportsbook}`);
+  if (filters.fanaticsCasino !== "all") parts.push(`Fanatics Casino: ${filters.fanaticsCasino}`);
   if (filters.collegeAllowedOnly) parts.push("College betting: Allowed only");
   if (filters.taxMin > 0) parts.push(`Min tax: ${filters.taxMin}%`);
   if (filters.taxMax < 60) parts.push(`Max tax: ${filters.taxMax}%`);
@@ -156,6 +178,8 @@ function setFilters(newFilters) {
   elements.sportsStatus.value = newFilters.sportsStatus;
   elements.igamingStatus.value = newFilters.igamingStatus;
   elements.region.value = newFilters.region;
+  elements.fanaticsSportsbook.value = newFilters.fanaticsSportsbook;
+  elements.fanaticsCasino.value = newFilters.fanaticsCasino;
   elements.taxMax.value = newFilters.taxMax;
   render();
 }
@@ -209,6 +233,8 @@ async function copySummary() {
   elements.sportsStatus,
   elements.igamingStatus,
   elements.region,
+  elements.fanaticsSportsbook,
+  elements.fanaticsCasino,
   elements.taxMax
 ].forEach((element) => {
   element.addEventListener("input", render);

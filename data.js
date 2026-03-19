@@ -51,3 +51,37 @@ const stateData = [
   { state: "Wisconsin", region: "Midwest", sports: "limited", online: false, igaming: false, tax: 10, college: "Allowed" },
   { state: "Wyoming", region: "West", sports: "legal", online: true, igaming: false, tax: 10, handleTier: "T3", college: "Allowed" }
 ];
+
+const fanaticsSportsbookStates = new Set([
+  "Arizona",
+  "Colorado",
+  "Connecticut",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Missouri",
+  "New Jersey",
+  "New York",
+  "North Carolina",
+  "Ohio",
+  "Pennsylvania",
+  "Tennessee",
+  "Vermont",
+  "Virginia",
+  "Washington D.C.",
+  "West Virginia",
+  "Wyoming"
+]);
+
+const fanaticsCasinoStates = new Set(["Michigan", "New Jersey", "Pennsylvania", "West Virginia"]);
+
+stateData.forEach((row) => {
+  row.fanaticsSportsbook = fanaticsSportsbookStates.has(row.state);
+  row.fanaticsCasino = fanaticsCasinoStates.has(row.state);
+});

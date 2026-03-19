@@ -30,6 +30,9 @@
         Tool to slice U.S. states by legalization, product, tax, handle tier, and Fanatics footprint to prioritize launch and investment decisions.
       </p>
       <p><strong>How to use:</strong> pick a preset to start a strategy story, then refine with filters and copy the KPI summary for deck-ready commentary.</p>
+      <p class="howto-examples">
+        <strong>Examples:</strong> “Show launch-ready states with tax ≤ 20% and Fanatics live.” • “Sort tax high→low to see where margin is most compressed.”
+      </p>
     </section>
 
     <main class="layout">
@@ -97,6 +100,17 @@
           <span>Max tax rate (% of GGR or equivalent)</span>
           <input type="range" id="taxMax" min="0" max="60" value="60" />
           <small id="taxMaxLabel">60%</small>
+          <small id="taxFilterMeta"></small>
+        </label>
+
+        <label class="field check">
+          <input type="checkbox" id="hasFanaticsPresence" />
+          <span>Has Fanatics presence (Sportsbook or Casino live)</span>
+        </label>
+
+        <label class="field check">
+          <input type="checkbox" id="excludeLimited" />
+          <span>Exclude limited / state-run only</span>
         </label>
 
         <div class="quick-presets">
@@ -143,21 +157,37 @@
             <h2>State Market View</h2>
             <p id="activeFilterText">No filters applied.</p>
             <div id="activeFilterChips" class="active-filter-chips"></div>
+            <div class="table-controls">
+              <label>
+                Primary sort
+                <select id="primarySort">
+                  <option value="none">No sort (source order)</option>
+                  <option value="state:asc">By State</option>
+                  <option value="tax:desc">By Tax (high→low)</option>
+                  <option value="handleTier:asc">By Handle Tier</option>
+                  <option value="fanaticsSportsbook:desc">Fanatics live first</option>
+                </select>
+              </label>
+              <label class="check">
+                <input type="checkbox" id="groupByRegion" />
+                <span>Group by Region</span>
+              </label>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>State</th>
-                  <th>Region</th>
-                  <th>Sports</th>
-                  <th>Online</th>
-                  <th>iGaming</th>
-                  <th>Fanatics Sportsbook</th>
-                  <th>Fanatics Casino</th>
-                  <th>Tax % (effective GGR rate)</th>
-                  <th>Handle Tier</th>
-                  <th>College Betting</th>
+                  <th><button type="button" class="sort-btn" data-sort-key="state">State <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="region">Region <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="sports">Sports betting legal? <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="online">Online/mobile? <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="igaming">iGaming <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="fanaticsSportsbook">Fanatics Sportsbook <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="fanaticsCasino">Fanatics Casino <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="tax">Tax % (effective GGR rate) <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="handleTier">Handle Tier <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="college">College Betting <span class="sort-indicator"></span></button></th>
                 </tr>
               </thead>
               <tbody id="stateRows"></tbody>

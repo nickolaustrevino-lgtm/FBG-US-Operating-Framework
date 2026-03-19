@@ -255,6 +255,31 @@ th {
   padding: 1.3rem;
 }
 
+.copy-toast {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  background: #111827;
+  color: #fff;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.copy-toast.error {
+  background: #991b1b;
+}
+
 @media (max-width: 980px) {
   .layout {
     grid-template-columns: 1fr;

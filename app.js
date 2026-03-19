@@ -12,6 +12,7 @@ const elements = {
   activeFilterText: document.getElementById("activeFilterText"),
   resetBtn: document.getElementById("resetBtn"),
   copyBtn: document.getElementById("copyBtn"),
+  copyToast: document.getElementById("copyToast"),
   presetButtons: document.querySelectorAll("[data-preset]")
 };
 
@@ -20,11 +21,13 @@ const defaultFilters = {
   sportsStatus: "all",
   igamingStatus: "all",
   region: "all",
+  collegeAllowedOnly: false,
   taxMin: 0,
   taxMax: 60
 };
 
 const hiddenFilters = {
+  collegeAllowedOnly: defaultFilters.collegeAllowedOnly,
   taxMin: defaultFilters.taxMin
 };
 
@@ -34,6 +37,7 @@ function getFilters() {
     sportsStatus: elements.sportsStatus.value,
     igamingStatus: elements.igamingStatus.value,
     region: elements.region.value,
+    collegeAllowedOnly: hiddenFilters.collegeAllowedOnly,
     taxMin: hiddenFilters.taxMin,
     taxMax: Number(elements.taxMax.value)
   };
@@ -48,6 +52,7 @@ function runFilter(data, filters) {
       if (row.igaming !== shouldHaveIGaming) return false;
     }
     if (filters.region !== "all" && row.region !== filters.region) return false;
+    if (filters.collegeAllowedOnly && row.college !== "Allowed") return false;
     if (row.tax !== null && row.tax < filters.taxMin) return false;
     if (row.tax !== null && row.tax > filters.taxMax) return false;
     return true;
@@ -94,6 +99,7 @@ function renderFilterText(filters) {
   if (filters.sportsStatus !== "all") parts.push(`Sports: ${filters.sportsStatus}`);
   if (filters.igamingStatus !== "all") parts.push(`iGaming: ${filters.igamingStatus}`);
   if (filters.region !== "all") parts.push(`Region: ${filters.region}`);
+  if (filters.collegeAllowedOnly) parts.push("College betting: Allowed only");
   if (filters.taxMin > 0) parts.push(`Min tax: ${filters.taxMin}%`);
   if (filters.taxMax < 60) parts.push(`Max tax: ${filters.taxMax}%`);
 
@@ -110,6 +116,7 @@ function render() {
 }
 
 function setFilters(newFilters) {
+  hiddenFilters.collegeAllowedOnly = newFilters.collegeAllowedOnly ?? defaultFilters.collegeAllowedOnly;
   hiddenFilters.taxMin = newFilters.taxMin ?? defaultFilters.taxMin;
   elements.search.value = newFilters.search;
   elements.sportsStatus.value = newFilters.sportsStatus;
@@ -124,10 +131,22 @@ function applyPreset(name) {
     "launch-now": { ...defaultFilters, sportsStatus: "legal" },
     "igaming-focus": { ...defaultFilters, igamingStatus: "yes" },
     "high-tax": { ...defaultFilters, taxMin: 20, taxMax: 60 },
-    "college-safe": { ...defaultFilters, sportsStatus: "legal", search: "" }
+    "college-safe": { ...defaultFilters, sportsStatus: "legal", collegeAllowedOnly: true, search: "" }
   };
 
   setFilters(presets[name] || defaultFilters);
+}
+
+let copyToastTimeout;
+
+function showCopyToast(message, isError = false) {
+  elements.copyToast.textContent = message;
+  elements.copyToast.classList.toggle("error", isError);
+  elements.copyToast.classList.add("show");
+  clearTimeout(copyToastTimeout);
+  copyToastTimeout = setTimeout(() => {
+    elements.copyToast.classList.remove("show");
+  }, 1500);
 }
 
 async function copySummary() {
@@ -138,11 +157,13 @@ async function copySummary() {
   try {
     await navigator.clipboard.writeText(summary);
     elements.copyBtn.textContent = "Copied";
+    showCopyToast("View summary copied to clipboard.");
     setTimeout(() => {
       elements.copyBtn.textContent = "Copy view summary";
     }, 1200);
   } catch {
     elements.copyBtn.textContent = "Clipboard blocked";
+    showCopyToast("Clipboard access is blocked in this browser.", true);
     setTimeout(() => {
       elements.copyBtn.textContent = "Copy view summary";
     }, 1200);

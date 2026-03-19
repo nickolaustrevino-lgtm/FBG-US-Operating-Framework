@@ -37,23 +37,24 @@ body {
   gap: 0.9rem;
 }
 
-.brand-mark {
-  background: var(--fbg-red);
-  color: white;
-  font-weight: 800;
-  border-radius: 0.5rem;
-  width: 3rem;
-  height: 3rem;
+.brand-logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 0.4rem;
+}
+
+.brand-titles {
   display: grid;
-  place-items: center;
+  gap: 0.2rem;
 }
 
 .brand-overline {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  opacity: 0.75;
+  opacity: 0.85;
 }
 
 h1,

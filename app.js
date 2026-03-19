@@ -20,6 +20,7 @@ const elements = {
   onlineMeta: document.getElementById("onlineMeta"),
   igamingCount: document.getElementById("igamingCount"),
   igamingMeta: document.getElementById("igamingMeta"),
+  liveShareStats: document.getElementById("liveShareStats"),
   derivedStats: document.getElementById("derivedStats"),
   activeFilterText: document.getElementById("activeFilterText"),
   activeFilterChips: document.getElementById("activeFilterChips"),
@@ -178,6 +179,9 @@ function renderKPIs(rows) {
   const totalJurisdictions = stateData.length;
   const legalOnlineStates = rows.filter((r) => r.online && r.sports === "legal");
   const igamingLiveStates = rows.filter((r) => r.igaming);
+  const casinoLiveStates = rows.filter((r) => r.fanaticsCasino);
+  const totalIgamingLive = stateData.filter((r) => r.igaming).length;
+  const totalCasinoLive = stateData.filter((r) => r.fanaticsCasino).length;
 
   elements.statesCount.textContent = rows.length;
   elements.statesMeta.textContent = `of ${totalJurisdictions} total jurisdictions`;
@@ -188,9 +192,9 @@ function renderKPIs(rows) {
     : "0% of current view";
 
   elements.igamingCount.textContent = igamingLiveStates.length;
-  elements.igamingMeta.textContent = rows.length
-    ? `${Math.round((igamingLiveStates.length / rows.length) * 100)}% of current view`
-    : "0% of current view";
+  elements.igamingMeta.textContent = `${igamingLiveStates.length}/${totalIgamingLive} live markets in view (${totalIgamingLive ? Math.round((igamingLiveStates.length / totalIgamingLive) * 100) : 0}%)`;
+
+  elements.liveShareStats.textContent = `Casino live in view: ${casinoLiveStates.length}/${totalCasinoLive} (${totalCasinoLive ? Math.round((casinoLiveStates.length / totalCasinoLive) * 100) : 0}% of total live casino markets). iGaming live in view: ${igamingLiveStates.length}/${totalIgamingLive} (${totalIgamingLive ? Math.round((igamingLiveStates.length / totalIgamingLive) * 100) : 0}% of total live iGaming markets).`;
 
   const underTax = stateData.filter((r) => r.tax === null || r.tax <= Number(elements.taxMax.value));
   const underTaxLive = underTax.filter((r) => r.fanaticsSportsbook).length;

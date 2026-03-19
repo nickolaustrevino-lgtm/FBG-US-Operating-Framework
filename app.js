@@ -22,6 +22,11 @@ const elements = {
   igamingMeta: document.getElementById("igamingMeta"),
   liveShareStats: document.getElementById("liveShareStats"),
   derivedStats: document.getElementById("derivedStats"),
+  stateBriefSelect: document.getElementById("stateBriefSelect"),
+  briefSnapshot: document.getElementById("briefSnapshot"),
+  briefUpdate: document.getElementById("briefUpdate"),
+  briefWhy: document.getElementById("briefWhy"),
+  briefLinks: document.getElementById("briefLinks"),
   activeFilterText: document.getElementById("activeFilterText"),
   activeFilterChips: document.getElementById("activeFilterChips"),
   presetNarrative: document.getElementById("presetNarrative"),
@@ -53,6 +58,28 @@ const hiddenFilters = {
 
 let activePreset = "none";
 let activeSort = { key: "state", direction: "asc" };
+let lastRenderedRows = [];
+
+const stateBriefOverrides = {
+  "New York": {
+    snapshot: "Status: Online sports betting legal and live statewide; iGaming remains not yet legalized.",
+    update: "Last notable update: 2025–2026 budget cycle includes renewed iGaming debate tied to state revenue pressure.",
+    why: "Why it matters for Fanatics: Top-handle market with high tax pressure; iGaming legalization would materially expand LTV opportunity.",
+    links: [
+      { label: "NYS Gaming Commission", url: "https://gaming.ny.gov/" },
+      { label: "Legal Sports Report - NY", url: "https://www.legalsportsreport.com/new-york/" }
+    ]
+  },
+  Maine: {
+    snapshot: "Status: Online sports betting legal; iGaming legalized in 2026 but rollout is pending.",
+    update: "Last notable update: Jan 2026 legalization created a new iGaming pathway with implementation and legal follow-through still developing.",
+    why: "Why it matters for Fanatics: Emerging dual-product state where sports presence can seed casino cross-sell if market access opens.",
+    links: [
+      { label: "Maine Gambling Control Unit", url: "https://www.maine.gov/dps/mgc/" },
+      { label: "Action Network - Maine betting", url: "https://www.actionnetwork.com/online-sports-betting/maine" }
+    ]
+  }
+};
 
 function getFilters() {
   return {
@@ -176,29 +203,69 @@ function renderRows(rows) {
 }
 
 function renderKPIs(rows) {
-  const totalJurisdictions = stateData.length;
   const legalOnlineStates = rows.filter((r) => r.online && r.sports === "legal");
-  const igamingLiveStates = rows.filter((r) => r.igaming);
+  const liveOrTargetStates = legalOnlineStates.filter((r) => r.fanaticsSportsbook || r.fanaticsTarget);
+  const totalHandleShare = stateData.reduce((sum, row) => sum + (row.handleShare || 0), 0);
+  const addressableHandleShare = liveOrTargetStates.reduce((sum, row) => sum + (row.handleShare || 0), 0);
+  const legalOnlineLiveSportsbook = legalOnlineStates.filter((r) => r.fanaticsSportsbook).length;
+  const whitespaceStates = legalOnlineStates.filter((r) => !r.fanaticsSportsbook).length;
+  const igamingLegalStates = stateData.filter((r) => r.igaming || rowIsIGamingPending(r));
+  const dualOpportunityStates = rows.filter((r) => (r.igaming || rowIsIGamingPending(r)) && (r.fanaticsSportsbook || r.fanaticsTarget));
+
+  elements.statesCount.textContent = `${addressableHandleShare.toFixed(1)}%`;
+  elements.statesMeta.textContent = `${totalHandleShare ? Math.round((addressableHandleShare / totalHandleShare) * 100) : 0}% of modeled U.S. online handle`;
+
+  elements.onlineCount.textContent = `${legalOnlineLiveSportsbook} of ${legalOnlineStates.length}`;
+  elements.onlineMeta.textContent = `${legalOnlineStates.length ? Math.round((legalOnlineLiveSportsbook / legalOnlineStates.length) * 100) : 0}% penetration • whitespace ${whitespaceStates}`;
+
+  elements.igamingCount.textContent = `${dualOpportunityStates.length} of ${igamingLegalStates.length}`;
+  elements.igamingMeta.textContent = `${igamingLegalStates.length ? Math.round((dualOpportunityStates.length / igamingLegalStates.length) * 100) : 0}% of iGaming-legal states`;
+
   const casinoLiveStates = rows.filter((r) => r.fanaticsCasino);
-  const totalIgamingLive = stateData.filter((r) => r.igaming).length;
   const totalCasinoLive = stateData.filter((r) => r.fanaticsCasino).length;
-
-  elements.statesCount.textContent = rows.length;
-  elements.statesMeta.textContent = `of ${totalJurisdictions} total jurisdictions`;
-
-  elements.onlineCount.textContent = legalOnlineStates.length;
-  elements.onlineMeta.textContent = rows.length
-    ? `${Math.round((legalOnlineStates.length / rows.length) * 100)}% of current view`
-    : "0% of current view";
-
-  elements.igamingCount.textContent = igamingLiveStates.length;
-  elements.igamingMeta.textContent = `${igamingLiveStates.length}/${totalIgamingLive} live markets in view (${totalIgamingLive ? Math.round((igamingLiveStates.length / totalIgamingLive) * 100) : 0}%)`;
-
+  const igamingLiveStates = rows.filter((r) => r.igaming);
+  const totalIgamingLive = stateData.filter((r) => r.igaming).length;
   elements.liveShareStats.textContent = `Casino live in view: ${casinoLiveStates.length}/${totalCasinoLive} (${totalCasinoLive ? Math.round((casinoLiveStates.length / totalCasinoLive) * 100) : 0}% of total live casino markets). iGaming live in view: ${igamingLiveStates.length}/${totalIgamingLive} (${totalIgamingLive ? Math.round((igamingLiveStates.length / totalIgamingLive) * 100) : 0}% of total live iGaming markets).`;
 
   const underTax = stateData.filter((r) => r.tax === null || r.tax <= Number(elements.taxMax.value));
   const underTaxLive = underTax.filter((r) => r.fanaticsSportsbook).length;
   elements.taxFilterMeta.textContent = `${underTax.length} of ${stateData.length} jurisdictions, ${underTaxLive} with Fanatics Sportsbook live under this tax ceiling.`;
+}
+
+function rowIsIGamingPending(row) {
+  return row.igamingStatus === "pending";
+}
+
+function getBriefForRow(row) {
+  if (stateBriefOverrides[row.state]) return stateBriefOverrides[row.state];
+  const igamingDescriptor = row.igaming ? "iGaming legal and live" : row.igamingStatus === "pending" ? "iGaming approved/pending launch" : "iGaming not legal";
+  return {
+    snapshot: `Status: ${row.sports === "legal" ? "Online sports legal" : row.sports === "limited" ? "Limited sports market" : "Sports betting not legal"}; ${igamingDescriptor}. Tax: ${displayTax(row)}.`,
+    update: "Last notable update: monitor state regulator and legislative calendars for 2025–2026 policy movement.",
+    why: `Why it matters for Fanatics: ${row.fanaticsSportsbook ? "live sportsbook footprint exists" : row.fanaticsTarget ? "target expansion candidate" : "currently outside near-term footprint"} with handle tier ${displayHandleTier(row)}.`,
+    links: [
+      { label: "State regulator resources", url: "https://www.ncsl.org/fiscal/seven-years-of-sports-betting-did-states-get-it-right" }
+    ]
+  };
+}
+
+function renderPolicyBrief(rows) {
+  const selectedState = elements.stateBriefSelect.value;
+  elements.stateBriefSelect.innerHTML = rows.map((row) => `<option value="${row.state}">${row.state}</option>`).join("");
+  if (!rows.length) {
+    elements.briefSnapshot.textContent = "No states in view.";
+    elements.briefUpdate.textContent = "";
+    elements.briefWhy.textContent = "";
+    elements.briefLinks.innerHTML = "";
+    return;
+  }
+  const targetState = rows.find((row) => row.state === selectedState) || rows[0];
+  elements.stateBriefSelect.value = targetState.state;
+  const brief = getBriefForRow(targetState);
+  elements.briefSnapshot.textContent = brief.snapshot;
+  elements.briefUpdate.textContent = brief.update;
+  elements.briefWhy.textContent = brief.why;
+  elements.briefLinks.innerHTML = brief.links.map((link) => `<li><a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a></li>`).join("");
 }
 
 function renderDerivedStats(rows) {
@@ -324,8 +391,10 @@ function render() {
   renderFilterText(filters);
   renderPresetNarrative();
   renderTableSummary(sorted);
+  renderPolicyBrief(sorted);
   updateSortIndicators();
   elements.taxMaxLabel.textContent = `${filters.taxMax}%`;
+  lastRenderedRows = sorted;
 }
 
 function setFilters(newFilters) {
@@ -458,6 +527,10 @@ elements.copyBtn.addEventListener("click", copySummary);
 
 elements.presetButtons.forEach((button) => {
   button.addEventListener("click", () => applyPreset(button.dataset.preset));
+});
+
+elements.stateBriefSelect.addEventListener("change", () => {
+  renderPolicyBrief(lastRenderedRows);
 });
 
 elements.primarySort.value = "state:asc";

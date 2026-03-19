@@ -80,8 +80,24 @@ const fanaticsSportsbookStates = new Set([
 ]);
 
 const fanaticsCasinoStates = new Set(["Michigan", "New Jersey", "Pennsylvania", "West Virginia"]);
+const fanaticsTargetStates = new Set(["Connecticut", "Iowa", "Kansas", "Louisiana", "Massachusetts", "Nevada", "Vermont", "Washington D.C."]);
+const handleShareOverrides = {
+  "New York": 16.0,
+  Illinois: 9.5,
+  "New Jersey": 7.4
+};
 
 stateData.forEach((row) => {
   row.fanaticsSportsbook = fanaticsSportsbookStates.has(row.state);
   row.fanaticsCasino = fanaticsCasinoStates.has(row.state);
+  row.fanaticsTarget = fanaticsTargetStates.has(row.state);
+  if (!row.online || row.sports !== "legal") {
+    row.handleShare = 0;
+    return;
+  }
+  if (handleShareOverrides[row.state] !== undefined) {
+    row.handleShare = handleShareOverrides[row.state];
+    return;
+  }
+  row.handleShare = row.handleTier === "T2" ? 4 : row.handleTier === "T3" ? 1 : 0;
 });

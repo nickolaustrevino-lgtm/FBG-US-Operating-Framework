@@ -426,6 +426,35 @@ th {
   color: #6b7280;
 }
 
+.briefs-card {
+  margin-top: 0.8rem;
+  padding: 0.9rem 1rem;
+}
+
+.brief-controls {
+  margin: 0.55rem 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.brief-content {
+  display: grid;
+  gap: 0.35rem;
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+.brief-content ul {
+  margin: 0.2rem 0 0;
+  padding-left: 1rem;
+}
+
+.brief-content a {
+  color: #9f1239;
+}
+
 .copy-toast {
   position: fixed;
   bottom: 1.25rem;

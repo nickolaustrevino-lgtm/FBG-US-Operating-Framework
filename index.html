@@ -135,19 +135,19 @@
       <section class="results">
         <div class="kpis">
           <article class="card kpi">
-            <p>Jurisdictions in view</p>
+            <p>Fanatics addressable handle share</p>
             <h3 id="statesCount">0</h3>
-            <small id="statesMeta">of 51 total jurisdictions</small>
+            <small id="statesMeta">Estimated share of total online handle in this view</small>
           </article>
           <article class="card kpi">
-            <p>Legal online sports</p>
+            <p>Fanatics live footprint in view</p>
             <h3 id="onlineCount">0</h3>
-            <small id="onlineMeta">0% of current view</small>
+            <small id="onlineMeta">Live states vs legal-online states in current view</small>
           </article>
           <article class="card kpi">
-            <p>iGaming live</p>
+            <p>iGaming + Fanatics opportunity</p>
             <h3 id="igamingCount">0</h3>
-            <small id="igamingMeta">0% of current view</small>
+            <small id="igamingMeta">Dual-product states in view vs total iGaming states</small>
           </article>
         </div>
         <p id="liveShareStats" class="derived-stats"></p>
@@ -209,6 +209,20 @@
             <li><strong>Handle Tier:</strong> relative annual handle grouping (T1/T2/T3).</li>
           </ul>
           <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling, not statutory legal advice.</p>
+        </section>
+
+        <section class="card briefs-card">
+          <h3>Regulatory & News Briefs (by state)</h3>
+          <div class="brief-controls">
+            <label for="stateBriefSelect">State</label>
+            <select id="stateBriefSelect"></select>
+          </div>
+          <div class="brief-content">
+            <p id="briefSnapshot"></p>
+            <p id="briefUpdate"></p>
+            <p id="briefWhy"></p>
+            <ul id="briefLinks"></ul>
+          </div>
         </section>
       </section>
     </main>

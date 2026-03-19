@@ -39,12 +39,12 @@
             <option value="all">All</option>
             <option value="legal">Legal</option>
             <option value="illegal">Illegal</option>
-            <option value="limited">Limited / Retail-only</option>
+            <option value="limited">Limited</option>
           </select>
         </label>
 
         <label class="field">
-          <span>iGaming</span>
+          <span>iGaming (online casino/poker)</span>
           <select id="igamingStatus">
             <option value="all">All</option>
             <option value="yes">Legal</option>
@@ -82,14 +82,14 @@
 
         <div class="action-row">
           <button id="resetBtn" class="ghost">Reset</button>
-          <button id="copyBtn">Copy view summary</button>
+          <button id="copyBtn">Copy KPI summary</button>
         </div>
       </aside>
 
       <section class="results">
         <div class="kpis">
           <article class="card kpi">
-            <p>States in view</p>
+            <p>Jurisdictions in view</p>
             <h3 id="statesCount">0</h3>
           </article>
           <article class="card kpi">
@@ -106,6 +106,7 @@
           <div class="table-head">
             <h2>State Market View</h2>
             <p id="activeFilterText">No filters applied.</p>
+            <div id="activeFilterChips" class="active-filter-chips"></div>
           </div>
           <div class="table-wrap">
             <table>
@@ -116,7 +117,8 @@
                   <th>Sports</th>
                   <th>Online</th>
                   <th>iGaming</th>
-                  <th>Tax %</th>
+                  <th>Tax % (effective GGR rate)</th>
+                  <th>Handle Tier</th>
                   <th>College Betting</th>
                 </tr>
               </thead>

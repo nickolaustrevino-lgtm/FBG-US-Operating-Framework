@@ -10,6 +10,7 @@ const elements = {
   onlineCount: document.getElementById("onlineCount"),
   igamingCount: document.getElementById("igamingCount"),
   activeFilterText: document.getElementById("activeFilterText"),
+  activeFilterChips: document.getElementById("activeFilterChips"),
   resetBtn: document.getElementById("resetBtn"),
   copyBtn: document.getElementById("copyBtn"),
   copyToast: document.getElementById("copyToast"),
@@ -81,9 +82,22 @@ function displayTax(row) {
   return `${row.tax}%`;
 }
 
+function displayHandleTier(row) {
+  return row.handleTier || "N/A";
+}
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function renderRows(rows) {
   if (!rows.length) {
-    elements.rows.innerHTML = `<tr><td colspan="7" class="empty">No states matched. Try broadening the filters.</td></tr>`;
+    elements.rows.innerHTML = `<tr><td colspan="8" class="empty">No states matched. Try broadening the filters.</td></tr>`;
     return;
   }
 
@@ -97,6 +111,7 @@ function renderRows(rows) {
         <td>${displayOnline(row)}</td>
         <td>${displayIGaming(row)}</td>
         <td>${displayTax(row)}</td>
+        <td>${displayHandleTier(row)}</td>
         <td>${row.college}</td>
       </tr>`
     )
@@ -120,6 +135,9 @@ function renderFilterText(filters) {
   if (filters.taxMax < 60) parts.push(`Max tax: ${filters.taxMax}%`);
 
   elements.activeFilterText.textContent = parts.length ? parts.join(" • ") : "No filters applied.";
+  elements.activeFilterChips.innerHTML = parts.length
+    ? parts.map((part) => `<span class="filter-chip">${escapeHtml(part)}</span>`).join("")
+    : `<span class="filter-chip muted">All jurisdictions</span>`;
 }
 
 function render() {
@@ -175,13 +193,13 @@ async function copySummary() {
     elements.copyBtn.textContent = "Copied";
     showCopyToast("View summary copied to clipboard.");
     setTimeout(() => {
-      elements.copyBtn.textContent = "Copy view summary";
+      elements.copyBtn.textContent = "Copy KPI summary";
     }, 1200);
   } catch {
     elements.copyBtn.textContent = "Clipboard blocked";
     showCopyToast("Clipboard access is blocked in this browser.", true);
     setTimeout(() => {
-      elements.copyBtn.textContent = "Copy view summary";
+      elements.copyBtn.textContent = "Copy KPI summary";
     }, 1200);
   }
 }

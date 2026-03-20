@@ -1,7 +1,6 @@
 const elements = {
   search: document.getElementById("search"),
   lastUpdatedDate: document.getElementById("lastUpdatedDate"),
-  refreshBtn: document.getElementById("refreshBtn"),
   sportsStatus: document.getElementById("sportsStatus"),
   igamingStatus: document.getElementById("igamingStatus"),
   region: document.getElementById("region"),
@@ -568,10 +567,5 @@ stateData
     option.textContent = state;
     elements.search.appendChild(option);
   });
-
-elements.refreshBtn.addEventListener("click", () => {
-  showCopyToast("Refreshing and reloading latest available dataset...");
-  setTimeout(() => window.location.reload(), 200);
-});
 
 setFilters(defaultFilters);

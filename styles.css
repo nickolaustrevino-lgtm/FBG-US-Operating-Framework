@@ -91,6 +91,21 @@ h1 {
   font-size: 0.9rem;
 }
 
+.intro-list {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+  color: #374151;
+  font-size: 0.88rem;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.intro-note {
+  margin-top: 0.45rem !important;
+  font-size: 0.82rem !important;
+  color: #52525b !important;
+}
+
 .howto-examples {
   font-size: 0.82rem !important;
   color: #4b5563 !important;

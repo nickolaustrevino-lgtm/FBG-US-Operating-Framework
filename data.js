@@ -1,5 +1,3 @@
-const dataLastUpdated = "March 20, 2026";
-
 const stateData = [
   { state: "Alabama", region: "South", sports: "illegal", online: false, igaming: false, tax: null, college: "N/A" },
   { state: "Alaska", region: "West", sports: "illegal", online: false, igaming: false, tax: null, college: "N/A" },
@@ -54,44 +52,52 @@ const stateData = [
   { state: "Wyoming", region: "West", sports: "legal", online: true, igaming: false, tax: 10, handleTier: "T3", college: "Allowed" }
 ];
 
-const fanaticsSportsbookStates = new Set(["Arizona","Colorado","Connecticut","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maryland","Massachusetts","Michigan","Missouri","New Jersey","New York","North Carolina","Ohio","Pennsylvania","Tennessee","Vermont","Virginia","Washington D.C.","West Virginia","Wyoming"]);
-const fanaticsCasinoStates = new Set(["Michigan", "New Jersey", "Pennsylvania", "West Virginia"]);
-const commerceCoreStates = new Set(["New York", "New Jersey", "Pennsylvania", "Illinois", "Massachusetts", "Ohio", "Michigan", "Florida", "Texas", "California"]);
-const measurementLightStates = new Set(["Montana", "Nebraska", "North Dakota", "South Dakota", "Wyoming", "Mississippi"]);
+const fanaticsSportsbookStates = new Set([
+  "Arizona",
+  "Colorado",
+  "Connecticut",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Missouri",
+  "New Jersey",
+  "New York",
+  "North Carolina",
+  "Ohio",
+  "Pennsylvania",
+  "Tennessee",
+  "Vermont",
+  "Virginia",
+  "Washington D.C.",
+  "West Virginia",
+  "Wyoming"
+]);
 
-const handleShareOverrides = { "New York": 16.0, Illinois: 9.5, "New Jersey": 7.4, Pennsylvania: 6.5, Ohio: 5.2, Massachusetts: 3.1 };
+const fanaticsCasinoStates = new Set(["Michigan", "New Jersey", "Pennsylvania", "West Virginia"]);
+const fanaticsTargetStates = new Set(["Connecticut", "Iowa", "Kansas", "Louisiana", "Massachusetts", "Nevada", "Vermont", "Washington D.C."]);
+const handleShareOverrides = {
+  "New York": 16.0,
+  Illinois: 9.5,
+  "New Jersey": 7.4
+};
 
 stateData.forEach((row) => {
   row.fanaticsSportsbook = fanaticsSportsbookStates.has(row.state);
   row.fanaticsCasino = fanaticsCasinoStates.has(row.state);
-
+  row.fanaticsTarget = fanaticsTargetStates.has(row.state);
   if (!row.online || row.sports !== "legal") {
-    row.addressableHandleB = 0;
-  } else if (handleShareOverrides[row.state] !== undefined) {
-    row.addressableHandleB = handleShareOverrides[row.state];
-  } else {
-    row.addressableHandleB = row.handleTier === "T1" ? 7 : row.handleTier === "T2" ? 3.6 : row.handleTier === "T3" ? 1.1 : 0;
+    row.handleShare = 0;
+    return;
   }
-
-  const shareToday = row.fanaticsSportsbook ? (row.handleTier === "T1" ? 7 : row.handleTier === "T2" ? 6 : 5) : 0;
-  const ceiling = row.sports === "legal" && row.online ? (row.handleTier === "T1" ? 16 : row.handleTier === "T2" ? 12 : 9) : 0;
-  row.fanaticsShareToday = shareToday;
-  row.fanaticsHeadroom = Math.max(0, ceiling - shareToday);
-
-  row.ecosystemFit = commerceCoreStates.has(row.state) ? "Core ecosystem" : row.handleTier === "T1" || row.handleTier === "T2" ? "Moderate ecosystem" : "Light ecosystem";
-  row.measurementReadiness = measurementLightStates.has(row.state) ? "Data light" : row.sports === "legal" && row.online ? "Clean tracking & data scale" : "Limited visibility";
-
-  if (!row.online || row.sports !== "legal") row.paybackBand = "12+ months";
-  else if ((row.tax ?? 99) <= 15 && row.fanaticsSportsbook) row.paybackBand = "<6 months";
-  else if ((row.tax ?? 99) <= 25) row.paybackBand = "6–12 months";
-  else row.paybackBand = "12+ months";
-
-  row.cacPressure = row.sports !== "legal" ? "High" : (row.tax ?? 99) > 35 ? "High" : row.handleTier === "T1" ? "High" : row.handleTier === "T2" ? "Medium" : "Low";
-
-  const flags = [];
-  if (row.sports === "limited" || row.onlineNote?.includes("only")) flags.push("Limited/state-run");
-  if (row.college === "Restricted props" || row.college === "No college betting") flags.push("No props/in-state college limits");
-  if ((row.tax ?? 0) > 40) flags.push("Tax > 40%");
-  if (row.state === "Florida" || row.state === "Rhode Island" || row.state === "Oregon") flags.push("Monopoly competitor");
-  row.riskFlags = flags;
+  if (handleShareOverrides[row.state] !== undefined) {
+    row.handleShare = handleShareOverrides[row.state];
+    return;
+  }
+  row.handleShare = row.handleTier === "T2" ? 4 : row.handleTier === "T3" ? 1 : 0;
 });

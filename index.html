@@ -25,89 +25,134 @@
           <h1>Market Filter Studio</h1>
         </div>
       </div>
-      <p class="topbar-note">Internal use • Growth + media decision lens</p>
+      <p class="topbar-note">Internal use • State + demo-ready market slicing</p>
     </header>
 
     <section class="card intro-card">
       <h2>What this is</h2>
       <p>
-        FBG U.S. Market Filter Studio gives the Fanatics Betting &amp; Gaming team a filterable view of where we can put media dollars to work — spanning legal status, tax, handle scale, payback cues, ecosystem fit, and measurement readiness.
+        Tool to slice U.S. states by legalization, product, tax, handle tier, and Fanatics footprint to prioritize launch and investment decisions.
       </p>
-      <p class="intro-note" id="methodologyNote">
-        Methodology: this view is intended to plug into FanGraph / MMM and incrementality testing as those capabilities mature; today it provides a structured, comparable view of market conditions.
+      <p><strong>How to use:</strong> pick a preset to start a strategy story, then refine with filters and copy the KPI summary for deck-ready commentary.</p>
+      <p class="howto-examples">
+        <strong>Examples:</strong> “Show launch-ready states with tax ≤ 20% and Fanatics live.” • “Sort tax high→low to see where margin is most compressed.”
       </p>
-      <div class="data-meta">
-        <p>Date Last Updated: <strong id="lastUpdatedDate">—</strong></p>
-      </div>
     </section>
 
     <main class="layout">
       <aside class="filters card">
         <h2>Smart Filters</h2>
-
-        <label class="field">
-          <span>Lens</span>
-          <select id="lensMode">
-            <option value="ops">Ops Visibility Lens</option>
-            <option value="growth">Media / Growth Lens</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Executive View</span>
-          <select id="execView">
-            <option value="president">President View</option>
-            <option value="finance">Finance View</option>
-          </select>
-        </label>
+        <p class="filter-help">
+          Use filters to answer: where we can launch now, where iGaming cross-sell exists, and where high-handle states carry higher tax burden.
+        </p>
 
         <label class="field">
           <span>Search state</span>
-          <select id="search"><option value="">All states</option></select>
+          <input type="text" id="search" placeholder="Ex: Texas" />
         </label>
 
-        <label class="field"><span>Sports betting status</span><select id="sportsStatus"><option value="all">All</option><option value="legal">Legal</option><option value="illegal">Illegal</option><option value="limited">Limited</option></select></label>
-        <label class="field"><span>iGaming</span><select id="igamingStatus"><option value="all">All</option><option value="yes">Legal</option><option value="no">Not legal</option></select></label>
-        <label class="field"><span>Region</span><select id="region"><option value="all">All regions</option><option value="Northeast">Northeast</option><option value="Mid-Atlantic">Mid-Atlantic</option><option value="South">South</option><option value="Midwest">Midwest</option><option value="West">West</option></select></label>
-        <label class="field"><span>Fanatics Sportsbook</span><select id="fanaticsSportsbook"><option value="all">All</option><option value="yes">Live</option><option value="no">Not live</option></select></label>
+        <label class="field">
+          <span>Sports betting status</span>
+          <select id="sportsStatus">
+            <option value="all">All</option>
+            <option value="legal">Legal</option>
+            <option value="illegal">Illegal</option>
+            <option value="limited">Limited</option>
+          </select>
+        </label>
 
-        <label class="field"><span>Max tax rate</span><input type="range" id="taxMax" min="0" max="60" value="60" /><small id="taxMaxLabel">60%</small><small id="taxFilterMeta"></small></label>
+        <label class="field">
+          <span>iGaming (online casino/poker)</span>
+          <select id="igamingStatus">
+            <option value="all">All</option>
+            <option value="yes">Legal</option>
+            <option value="no">Not legal</option>
+          </select>
+        </label>
 
-        <label class="field check"><input type="checkbox" id="showPerformanceLayer" checked /><span>Show Performance Layer (Payback + CAC)</span></label>
-        <label class="field check"><input type="checkbox" id="excludeLimited" /><span>Exclude limited / state-run only</span></label>
-        <label class="field check"><input type="checkbox" id="hideUnattractive" /><span>Hide structurally unattractive media states</span></label>
+        <label class="field">
+          <span>Region</span>
+          <select id="region">
+            <option value="all">All regions</option>
+            <option value="Northeast">Northeast</option>
+            <option value="Mid-Atlantic">Mid-Atlantic</option>
+            <option value="South">South</option>
+            <option value="Midwest">Midwest</option>
+            <option value="West">West</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Fanatics Sportsbook</span>
+          <select id="fanaticsSportsbook">
+            <option value="all">All</option>
+            <option value="yes">Live</option>
+            <option value="no">Not live</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Fanatics Online Casino</span>
+          <select id="fanaticsCasino">
+            <option value="all">All</option>
+            <option value="yes">Live</option>
+            <option value="no">Not live</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Max tax rate (% of GGR or equivalent)</span>
+          <input type="range" id="taxMax" min="0" max="60" value="60" />
+          <small id="taxMaxLabel">60%</small>
+          <small id="taxFilterMeta"></small>
+        </label>
+
+        <label class="field check">
+          <input type="checkbox" id="hasFanaticsPresence" />
+          <span>Has Fanatics presence (Sportsbook or Casino live)</span>
+        </label>
+
+        <label class="field check">
+          <input type="checkbox" id="excludeLimited" />
+          <span>Exclude limited / state-run only</span>
+        </label>
 
         <div class="quick-presets">
           <span>Demo presets</span>
           <div class="preset-grid">
-            <button data-preset="launch-now">Launch-Now</button>
-            <button data-preset="cross-sell">Ecosystem / Cross-Sell Core</button>
-            <button data-preset="brand-led">Brand-Led Expansion</button>
-            <button data-preset="dr-focus">DR / Payback Focus</button>
+            <button data-preset="launch-now">Launch-Now States</button>
+            <button data-preset="igaming-focus">iGaming Focus</button>
+            <button data-preset="high-tax">High Tax Risk</button>
+            <button data-preset="college-safe">College-Friendly</button>
           </div>
-          <p id="presetNarrative" class="preset-narrative">Preset story appears here.</p>
-        </div>
-
-        <div class="quick-presets">
-          <span>Budget Scenario</span>
-          <label class="field"><span>Incremental media budget ($M)</span><input id="budgetInput" type="number" min="1" step="1" value="25" /></label>
-          <label class="field"><span>Objective</span><select id="budgetObjective"><option value="ngr">Maximize near-term NGR</option><option value="crossSell">Maximize iGaming cross-sell</option><option value="lowTax">Focus on low-tax T1/T2</option></select></label>
-          <button id="runScenarioBtn">Run scenario</button>
-          <p id="scenarioSummary" class="preset-narrative"></p>
-          <ol id="scenarioList" class="scenario-list"></ol>
+          <p id="presetNarrative" class="preset-narrative">
+            Preset story: select a demo preset to load a narrative-backed market slice.
+          </p>
         </div>
 
         <div class="action-row">
           <button id="resetBtn" class="ghost">Reset</button>
-          <button id="copyBtn">Narrative Export</button>
+          <button id="copyBtn">Copy KPI summary</button>
         </div>
       </aside>
 
       <section class="results">
         <div class="kpis">
-          <article class="card kpi"><p>Fanatics addressable handle share</p><h3 id="statesCount">0</h3><small id="statesMeta"></small></article>
-          <article class="card kpi"><p>Fanatics live footprint in view</p><h3 id="onlineCount">0</h3><small id="onlineMeta"></small></article>
-          <article class="card kpi"><p>Efficiency Snapshot</p><h3 id="igamingCount">0</h3><small id="igamingMeta"></small></article>
+          <article class="card kpi">
+            <p>Fanatics addressable handle share</p>
+            <h3 id="statesCount">0</h3>
+            <small id="statesMeta">Estimated share of total online handle in this view</small>
+          </article>
+          <article class="card kpi">
+            <p>Fanatics live footprint in view</p>
+            <h3 id="onlineCount">0</h3>
+            <small id="onlineMeta">Live states vs legal-online states in current view</small>
+          </article>
+          <article class="card kpi">
+            <p>iGaming + Fanatics opportunity</p>
+            <h3 id="igamingCount">0</h3>
+            <small id="igamingMeta">Dual-product states in view vs total iGaming states</small>
+          </article>
         </div>
         <p id="liveShareStats" class="derived-stats"></p>
         <p id="derivedStats" class="derived-stats"></p>
@@ -117,25 +162,77 @@
             <h2>State Market View</h2>
             <p id="activeFilterText">No filters applied.</p>
             <div id="activeFilterChips" class="active-filter-chips"></div>
+            <div class="table-controls">
+              <label>
+                Primary sort
+                <select id="primarySort">
+                  <option value="none">No sort (source order)</option>
+                  <option value="state:asc">By State</option>
+                  <option value="tax:desc">By Tax (high→low)</option>
+                  <option value="handleTier:asc">By Handle Tier</option>
+                  <option value="fanaticsSportsbook:desc">Fanatics live first</option>
+                </select>
+              </label>
+              <label class="check">
+                <input type="checkbox" id="groupByRegion" />
+                <span>Group by Region</span>
+              </label>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>State</th><th>Region</th><th>Handle Tier</th><th>Addressable Handle ($B)</th><th>Fanatics share today / headroom</th><th>Priority Score</th><th>Ecosystem Fit</th>
-                  <th class="perf-col">Payback Band</th><th class="perf-col">CAC Pressure</th>
-                  <th>Sports</th><th>iGaming</th><th>Tax</th><th>Measurement</th><th>Risk / Constraints</th>
+                  <th><button type="button" class="sort-btn" data-sort-key="state">State <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="region">Region <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="sports">Sports betting legal? <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="online">Online/mobile? <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="igaming">iGaming <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="fanaticsSportsbook">Fanatics Sportsbook <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="fanaticsCasino">Fanatics Casino <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="tax">Tax % (effective GGR rate) <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="handleTier">Handle Tier <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="college">College Betting <span class="sort-indicator"></span></button></th>
                 </tr>
               </thead>
               <tbody id="stateRows"></tbody>
-              <tfoot><tr id="tableSummaryRow" class="table-summary-row"></tr></tfoot>
+              <tfoot>
+                <tr id="tableSummaryRow" class="table-summary-row"></tr>
+              </tfoot>
             </table>
           </div>
         </article>
+
+        <section class="card glossary-card">
+          <h3>Glossary</h3>
+          <ul>
+            <li><strong>Sports:</strong> whether online sports betting is legal.</li>
+            <li><strong>Online:</strong> whether remote betting is allowed vs retail-only/state-run.</li>
+            <li><strong>iGaming:</strong> whether online casino/poker is legal (or pending).</li>
+            <li><strong>Tax %:</strong> effective operator tax (Tennessee uses handle tax).</li>
+            <li><strong>Handle Tier:</strong> relative annual handle grouping (T1/T2/T3).</li>
+          </ul>
+          <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling, not statutory legal advice.</p>
+        </section>
+
+        <section class="card briefs-card">
+          <h3>Regulatory & News Briefs (by state)</h3>
+          <div class="brief-controls">
+            <label for="stateBriefSelect">State</label>
+            <select id="stateBriefSelect"></select>
+          </div>
+          <div class="brief-content">
+            <p id="briefSnapshot"></p>
+            <p id="briefUpdate"></p>
+            <p id="briefWhy"></p>
+            <ul id="briefLinks"></ul>
+          </div>
+        </section>
       </section>
     </main>
 
     <div id="copyToast" class="copy-toast" role="status" aria-live="polite"></div>
+
     <script src="data.js"></script>
     <script src="app.js"></script>
   </body>

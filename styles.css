@@ -91,37 +91,9 @@ h1 {
   font-size: 0.9rem;
 }
 
-.intro-list {
-  margin: 0.35rem 0 0;
-  padding-left: 1.1rem;
-  color: #374151;
-  font-size: 0.88rem;
-  display: grid;
-  gap: 0.18rem;
-}
-
-.intro-note {
-  margin-top: 0.45rem !important;
-  font-size: 0.82rem !important;
-  color: #52525b !important;
-}
-
 .howto-examples {
   font-size: 0.82rem !important;
   color: #4b5563 !important;
-}
-
-.data-meta {
-  margin-top: 0.45rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.data-meta p {
-  font-size: 0.8rem !important;
-  color: #374151 !important;
 }
 
 .card {
@@ -285,17 +257,6 @@ button.ghost {
 .table-head p {
   color: #52525b;
   font-size: 0.88rem;
-}
-
-.major-policy-callout {
-  width: 100%;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #9a3412 !important;
-  border-radius: 0.45rem;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.8rem !important;
-  font-weight: 600;
 }
 
 .table-controls {
@@ -528,21 +489,4 @@ th {
   .kpis {
     grid-template-columns: 1fr;
   }
-}
-
-.scenario-list {
-  margin: 0.35rem 0 0;
-  padding-left: 1rem;
-  font-size: 0.82rem;
-  color: #374151;
-  display: grid;
-  gap: 0.2rem;
-}
-
-th:nth-child(6), td:nth-child(6) {
-  background: #fff7ed;
-}
-
-#lensMode, #execView {
-  font-weight: 600;
 }

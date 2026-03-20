@@ -1,7 +1,6 @@
 const elements = {
   search: document.getElementById("search"),
   lastUpdatedDate: document.getElementById("lastUpdatedDate"),
-  refreshBtn: document.getElementById("refreshBtn"),
   sportsStatus: document.getElementById("sportsStatus"),
   igamingStatus: document.getElementById("igamingStatus"),
   region: document.getElementById("region"),
@@ -58,6 +57,8 @@ const hiddenFilters = {
   collegeAllowedOnly: defaultFilters.collegeAllowedOnly,
   taxMin: defaultFilters.taxMin
 };
+
+const HIGH_TAX_PRESET_MIN = 36;
 
 let activePreset = "none";
 let activeSort = { key: "state", direction: "asc" };
@@ -289,7 +290,7 @@ function renderPresetNarrative() {
     "igaming-focus":
       "iGaming Focus: states where online casino is legal to highlight sportsbook-to-casino cross-sell opportunities.",
     "high-tax":
-      "High Tax Risk: high-tax environments that may compress margin and require different promo/pricing strategy.",
+      `High Tax Risk: tax rates ${HIGH_TAX_PRESET_MIN}% and above that may compress margin and require different promo/pricing strategy.`,
     "college-safe":
       "College-Friendly: legal online states with college betting allowed to support compliant college-themed campaigns.",
     "white-space":
@@ -434,7 +435,7 @@ function applyPreset(name) {
   const presets = {
     "launch-now": { ...defaultFilters, sportsStatus: "legal", fanaticsSportsbook: "yes", taxMax: 20, hasFanaticsPresence: true },
     "igaming-focus": { ...defaultFilters, igamingStatus: "yes" },
-    "high-tax": { ...defaultFilters, taxMin: 36, taxMax: 60 },
+    "high-tax": { ...defaultFilters, taxMin: HIGH_TAX_PRESET_MIN, taxMax: defaultFilters.taxMax },
     "college-safe": { ...defaultFilters, sportsStatus: "legal", collegeAllowedOnly: true, search: "" },
     "white-space": { ...defaultFilters, sportsStatus: "legal", fanaticsSportsbook: "no", excludeLimited: true },
     "cross-sell": { ...defaultFilters, igamingStatus: "yes", fanaticsSportsbook: "yes" }
@@ -566,10 +567,5 @@ stateData
     option.textContent = state;
     elements.search.appendChild(option);
   });
-
-elements.refreshBtn.addEventListener("click", () => {
-  showCopyToast("Refreshing and reloading latest available dataset...");
-  setTimeout(() => window.location.reload(), 200);
-});
 
 setFilters(defaultFilters);

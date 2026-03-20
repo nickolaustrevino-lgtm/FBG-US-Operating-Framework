@@ -1,5 +1,7 @@
 const elements = {
   search: document.getElementById("search"),
+  lastUpdatedDate: document.getElementById("lastUpdatedDate"),
+  refreshBtn: document.getElementById("refreshBtn"),
   sportsStatus: document.getElementById("sportsStatus"),
   igamingStatus: document.getElementById("igamingStatus"),
   region: document.getElementById("region"),
@@ -28,6 +30,7 @@ const elements = {
   briefWhy: document.getElementById("briefWhy"),
   briefLinks: document.getElementById("briefLinks"),
   activeFilterText: document.getElementById("activeFilterText"),
+  majorPolicyCallout: document.getElementById("majorPolicyCallout"),
   activeFilterChips: document.getElementById("activeFilterChips"),
   presetNarrative: document.getElementById("presetNarrative"),
   resetBtn: document.getElementById("resetBtn"),
@@ -83,7 +86,7 @@ const stateBriefOverrides = {
 
 function getFilters() {
   return {
-    search: elements.search.value.trim().toLowerCase(),
+    search: elements.search.value,
     sportsStatus: elements.sportsStatus.value,
     igamingStatus: elements.igamingStatus.value,
     region: elements.region.value,
@@ -99,7 +102,7 @@ function getFilters() {
 
 function runFilter(data, filters) {
   return data.filter((row) => {
-    if (filters.search && !row.state.toLowerCase().includes(filters.search)) return false;
+    if (filters.search && row.state !== filters.search) return false;
     if (filters.sportsStatus !== "all" && row.sports !== filters.sportsStatus) return false;
     if (filters.igamingStatus !== "all") {
       const shouldHaveIGaming = filters.igamingStatus === "yes";
@@ -288,7 +291,11 @@ function renderPresetNarrative() {
     "high-tax":
       "High Tax Risk: high-tax environments that may compress margin and require different promo/pricing strategy.",
     "college-safe":
-      "College-Friendly: legal online states with college betting allowed to support compliant college-themed campaigns."
+      "College-Friendly: legal online states with college betting allowed to support compliant college-themed campaigns.",
+    "white-space":
+      "Whitespace Expansion: legal online states where Fanatics Sportsbook is not yet live, prioritized for expansion mapping.",
+    "cross-sell":
+      "Cross-Sell Core: iGaming-legal states where Fanatics can maximize sportsbook-to-casino lifetime value."
   };
 
   elements.presetNarrative.textContent = narratives[activePreset] || narratives.none;
@@ -309,6 +316,15 @@ function renderTableSummary(rows) {
       : `${activePreset.replace("-", " ")} view`;
 
   elements.tableSummaryRow.innerHTML = `<td colspan="10"><strong>${viewLabel}</strong> • Avg tax: ${averageTax === "N/A" ? averageTax : `${averageTax}%`} • Jurisdictions: ${rows.length} • Live sportsbook: ${liveSportsbook} • Live casino: ${liveCasino} • iGaming legal: ${igamingLegal} • College allowed: ${collegeAllowed} • College prohibited: ${collegeProhibited} • Limited/state-run: ${limitedMarkets}</td>`;
+}
+
+function renderMajorPolicyCallout(rows) {
+  const updates = rows.filter((row) => row.majorPolicyUpdate).map((row) => `${row.state}: ${row.majorPolicyUpdate}`);
+  if (!updates.length) {
+    elements.majorPolicyCallout.textContent = "";
+    return;
+  }
+  elements.majorPolicyCallout.textContent = `Major paid-media policy updates: ${updates.slice(0, 2).join(" | ")}`;
 }
 
 function compareValues(a, b, direction = "asc") {
@@ -391,6 +407,7 @@ function render() {
   renderFilterText(filters);
   renderPresetNarrative();
   renderTableSummary(sorted);
+  renderMajorPolicyCallout(sorted);
   renderPolicyBrief(sorted);
   updateSortIndicators();
   elements.taxMaxLabel.textContent = `${filters.taxMax}%`;
@@ -418,13 +435,17 @@ function applyPreset(name) {
     "launch-now": { ...defaultFilters, sportsStatus: "legal", fanaticsSportsbook: "yes", taxMax: 20, hasFanaticsPresence: true },
     "igaming-focus": { ...defaultFilters, igamingStatus: "yes" },
     "high-tax": { ...defaultFilters, taxMin: 36, taxMax: 60 },
-    "college-safe": { ...defaultFilters, sportsStatus: "legal", collegeAllowedOnly: true, search: "" }
+    "college-safe": { ...defaultFilters, sportsStatus: "legal", collegeAllowedOnly: true, search: "" },
+    "white-space": { ...defaultFilters, sportsStatus: "legal", fanaticsSportsbook: "no", excludeLimited: true },
+    "cross-sell": { ...defaultFilters, igamingStatus: "yes", fanaticsSportsbook: "yes" }
   };
 
   if (name === "high-tax") activeSort = { key: "tax", direction: "desc" };
   if (name === "launch-now") activeSort = { key: "handleTier", direction: "asc" };
   if (name === "igaming-focus") activeSort = { key: "fanaticsCasino", direction: "desc" };
   if (name === "college-safe") activeSort = { key: "state", direction: "asc" };
+  if (name === "white-space") activeSort = { key: "handleTier", direction: "asc" };
+  if (name === "cross-sell") activeSort = { key: "fanaticsCasino", direction: "desc" };
   elements.primarySort.value = activeSort.key ? `${activeSort.key}:${activeSort.direction}` : "none";
 
   setFilters(presets[name] || defaultFilters);
@@ -534,4 +555,21 @@ elements.stateBriefSelect.addEventListener("change", () => {
 });
 
 elements.primarySort.value = "state:asc";
+elements.lastUpdatedDate.textContent = typeof dataLastUpdated === "string" ? dataLastUpdated : new Date().toISOString().slice(0, 10);
+
+stateData
+  .map((row) => row.state)
+  .sort((a, b) => a.localeCompare(b))
+  .forEach((state) => {
+    const option = document.createElement("option");
+    option.value = state;
+    option.textContent = state;
+    elements.search.appendChild(option);
+  });
+
+elements.refreshBtn.addEventListener("click", () => {
+  showCopyToast("Refreshing and reloading latest available dataset...");
+  setTimeout(() => window.location.reload(), 200);
+});
+
 setFilters(defaultFilters);

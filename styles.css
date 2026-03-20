@@ -96,6 +96,24 @@ h1 {
   color: #4b5563 !important;
 }
 
+.data-meta {
+  margin-top: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.data-meta p {
+  font-size: 0.8rem !important;
+  color: #374151 !important;
+}
+
+.data-meta button {
+  padding: 0.34rem 0.55rem;
+  font-size: 0.78rem;
+}
+
 .card {
   background: #fff;
   border: 1px solid var(--fbg-border);
@@ -257,6 +275,17 @@ button.ghost {
 .table-head p {
   color: #52525b;
   font-size: 0.88rem;
+}
+
+.major-policy-callout {
+  width: 100%;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412 !important;
+  border-radius: 0.45rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem !important;
+  font-weight: 600;
 }
 
 .table-controls {

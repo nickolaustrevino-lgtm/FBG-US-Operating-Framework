@@ -529,3 +529,20 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+.scenario-list {
+  margin: 0.35rem 0 0;
+  padding-left: 1rem;
+  font-size: 0.82rem;
+  color: #374151;
+  display: grid;
+  gap: 0.2rem;
+}
+
+th:nth-child(6), td:nth-child(6) {
+  background: #fff7ed;
+}
+
+#lensMode, #execView {
+  font-weight: 600;
+}

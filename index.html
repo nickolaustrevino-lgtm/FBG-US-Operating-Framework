@@ -31,12 +31,24 @@
     <section class="card intro-card">
       <h2>What this is</h2>
       <p>
-        Tool to slice U.S. states by legalization, product, tax, handle tier, and Fanatics footprint to prioritize launch and investment decisions.
+        FBG U.S. Market Filter Studio gives the Fanatics Betting &amp; Gaming team a current, filterable view of where we operate across the US — tracking legalization status, tax rates, handle tiers, iGaming eligibility, and live Fanatics footprint by state.
       </p>
-      <p><strong>How to use:</strong> pick a preset to start a strategy story, then refine with filters and copy the KPI summary for deck-ready commentary.</p>
+      <p><strong>Use this to:</strong></p>
+      <ul class="intro-list">
+        <li>Stay current on the regulatory and operational status of active and pending markets.</li>
+        <li>Quickly check where Fanatics Sportsbook or Casino is live vs. not yet live.</li>
+        <li>Understand tax and iGaming conditions across the states we operate in.</li>
+        <li>Pull a filtered state-level snapshot for internal reporting or team alignment.</li>
+      </ul>
+      <p class="intro-note">
+        This is a reference and monitoring tool, not a planning or forecasting model. All data is simplified for operational visibility and should be verified against official sources for legal or compliance purposes.
+      </p>
       <p class="howto-examples">
         <strong>Examples:</strong> “Show launch-ready states with tax ≤ 20% and Fanatics live.” • “Sort tax high→low to see where margin is most compressed.”
       </p>
+      <div class="data-meta">
+        <p>Date Last Updated: <strong id="lastUpdatedDate">—</strong></p>
+      </div>
     </section>
 
     <main class="layout">
@@ -48,7 +60,9 @@
 
         <label class="field">
           <span>Search state</span>
-          <input type="text" id="search" placeholder="Ex: Texas" />
+          <select id="search">
+            <option value="">All states</option>
+          </select>
         </label>
 
         <label class="field">
@@ -124,6 +138,8 @@
             <button data-preset="igaming-focus">iGaming Focus</button>
             <button data-preset="high-tax">High Tax Risk</button>
             <button data-preset="college-safe">College-Friendly</button>
+            <button data-preset="white-space">Whitespace Expansion</button>
+            <button data-preset="cross-sell">Cross-Sell Core</button>
           </div>
           <p id="presetNarrative" class="preset-narrative">
             Preset story: select a demo preset to load a narrative-backed market slice.
@@ -161,6 +177,7 @@
           <div class="table-head">
             <h2>State Market View</h2>
             <p id="activeFilterText">No filters applied.</p>
+            <p id="majorPolicyCallout" class="major-policy-callout"></p>
             <div id="activeFilterChips" class="active-filter-chips"></div>
             <div class="table-controls">
               <label>
@@ -206,11 +223,15 @@
         <section class="card glossary-card">
           <h3>Glossary</h3>
           <ul>
-            <li><strong>Sports:</strong> whether online sports betting is legal.</li>
-            <li><strong>Online:</strong> whether remote betting is allowed vs retail-only/state-run.</li>
-            <li><strong>iGaming:</strong> whether online casino/poker is legal (or pending).</li>
-            <li><strong>Tax %:</strong> effective operator tax (Tennessee uses handle tax).</li>
-            <li><strong>Handle Tier:</strong> relative annual handle grouping (T1/T2/T3).</li>
+            <li><strong>Sports betting legal?:</strong> jurisdiction-level legality status for online sports betting. “Limited” typically indicates monopoly, tribal-only, retail-only, or constrained operator access.</li>
+            <li><strong>Online/mobile?:</strong> whether customers can register and bet remotely. Notes such as “state-run only” or “Hard Rock only” signal restricted competitive availability.</li>
+            <li><strong>iGaming:</strong> legal status for online casino/poker. “Pending” means law exists but launch or licensing is not yet fully live.</li>
+            <li><strong>Fanatics Sportsbook / Casino:</strong> current operating footprint. “Live” means Fanatics product is active; “Not live” indicates either whitespace or non-participation today.</li>
+            <li><strong>Tax % (effective GGR rate):</strong> simplified operator tax burden for market comparison. Some states use non-GGR constructs (e.g., Tennessee handle tax) or tiered schedules.</li>
+            <li><strong>Handle Tier:</strong> market-size grouping based on annual betting handle (T1 largest, T2 mid, T3 long-tail) used for strategic prioritization.</li>
+            <li><strong>Addressable handle share KPI:</strong> modeled share of total online handle represented by states in view where Fanatics is live or plausible near-term target.</li>
+            <li><strong>Live footprint KPI:</strong> Fanatics live states in view divided by legal-online states in view, highlighting penetration and whitespace.</li>
+            <li><strong>Dual-product opportunity KPI:</strong> iGaming-legal states in view where Fanatics is live/targeted, used to prioritize sportsbook→casino cross-sell upside.</li>
           </ul>
           <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling, not statutory legal advice.</p>
         </section>

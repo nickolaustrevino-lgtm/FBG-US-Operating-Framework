@@ -25,13 +25,13 @@
           <h1>Market Filter Studio</h1>
         </div>
       </div>
-      <p class="topbar-note">Internal use • State + demo-ready market slicing</p>
+      <p class="topbar-note">Internal use • 51 jurisdictions (50 states + DC) • strategy view</p>
     </header>
 
     <section class="card intro-card">
       <h2>What this is</h2>
       <p>
-        FBG U.S. Market Filter Studio gives the Fanatics Betting &amp; Gaming team a current, filterable view of where we operate across the US — tracking legalization status, tax rates, handle tiers, iGaming eligibility, and live Fanatics footprint by state.
+        FBG U.S. Market Filter Studio gives the Fanatics Betting &amp; Gaming team a current, filterable view across 51 jurisdictions (50 states + DC) — tracking legalization status, tax rates, handle tiers, iGaming eligibility, and live Fanatics footprint by state.
       </p>
       <p><strong>Use this to:</strong></p>
       <ul class="intro-list">
@@ -40,6 +40,10 @@
         <li>Understand tax and iGaming conditions across the states we operate in.</li>
         <li>Pull a filtered state-level snapshot for internal reporting or team alignment.</li>
       </ul>
+      <div class="strategy-callout">
+        <strong>Strategy view, not a system of record.</strong>
+        Use this for narrative framing, prioritization, and demo conversations; confirm launch, tax, licensing, and offer-level details with legal/compliance before decisions.
+      </div>
       <p class="intro-note">
         This is a reference and monitoring tool, not a planning or forecasting model. All data is simplified for operational visibility and should be verified against official sources for legal or compliance purposes.
       </p>
@@ -48,6 +52,7 @@
       </p>
       <div class="data-meta">
         <p>Date Last Updated: <strong id="lastUpdatedDate">—</strong></p>
+        <p>Source cadence: <strong>Quarterly refresh</strong> • urgent launch/tax changes may lag by up to 2 weeks.</p>
       </div>
     </section>
 
@@ -79,7 +84,8 @@
           <span>iGaming (online casino/poker)</span>
           <select id="igamingStatus">
             <option value="all">All</option>
-            <option value="yes">Legal</option>
+            <option value="yes">Live</option>
+            <option value="pending">Pending</option>
             <option value="no">Not legal</option>
           </select>
         </label>
@@ -165,9 +171,9 @@
             <small id="onlineMeta">Live states vs legal-online states in current view</small>
           </article>
           <article class="card kpi">
-            <p>iGaming + Fanatics opportunity</p>
+            <p>Fanatics casino live footprint</p>
             <h3 id="igamingCount">0</h3>
-            <small id="igamingMeta">Dual-product states in view vs total iGaming states</small>
+            <small id="igamingMeta">Casino-live states in view vs iGaming-live states</small>
           </article>
         </div>
         <p id="liveShareStats" class="derived-stats"></p>
@@ -207,7 +213,7 @@
                   <th><button type="button" class="sort-btn" data-sort-key="igaming">iGaming <span class="sort-indicator"></span></button></th>
                   <th><button type="button" class="sort-btn" data-sort-key="fanaticsSportsbook">Fanatics Sportsbook <span class="sort-indicator"></span></button></th>
                   <th><button type="button" class="sort-btn" data-sort-key="fanaticsCasino">Fanatics Casino <span class="sort-indicator"></span></button></th>
-                  <th><button type="button" class="sort-btn" data-sort-key="tax">Tax % (effective GGR rate) <span class="sort-indicator"></span></button></th>
+                  <th><button type="button" class="sort-btn" data-sort-key="tax">Tax % (effective / simplified) <span class="sort-indicator"></span></button></th>
                   <th><button type="button" class="sort-btn" data-sort-key="handleTier">Handle Tier <span class="sort-indicator"></span></button></th>
                   <th><button type="button" class="sort-btn" data-sort-key="college">College Betting <span class="sort-indicator"></span></button></th>
                 </tr>
@@ -218,22 +224,26 @@
               </tfoot>
             </table>
           </div>
+          <div class="table-footnotes">
+            <p class="table-footnote"><strong>Limited markets:</strong> simplified to retail-only, tribal-only, monopoly, or otherwise restricted online competition.</p>
+            <p class="table-footnote"><strong>College rules simplified:</strong> “Allowed” may still include in-state team or prop carve-outs; confirm offer-level restrictions with compliance.</p>
+          </div>
         </article>
 
         <section class="card glossary-card">
           <h3>Glossary</h3>
           <ul>
-            <li><strong>Sports betting legal?:</strong> jurisdiction-level legality status for online sports betting. “Limited” typically indicates monopoly, tribal-only, retail-only, or constrained operator access.</li>
+            <li><strong>Sports betting legal?:</strong> jurisdiction-level legality status for online sports betting. “Limited” typically indicates monopoly, tribal-only, retail-only, or otherwise constrained operator access.</li>
             <li><strong>Online/mobile?:</strong> whether customers can register and bet remotely. Notes such as “state-run only” or “Hard Rock only” signal restricted competitive availability.</li>
-            <li><strong>iGaming:</strong> legal status for online casino/poker. “Pending” means law exists but launch or licensing is not yet fully live.</li>
+            <li><strong>iGaming:</strong> legal status for online casino/poker. “Pending” means law exists or is moving, but launch or licensing is not yet fully live.</li>
             <li><strong>Fanatics Sportsbook / Casino:</strong> current operating footprint. “Live” means Fanatics product is active; “Not live” indicates either whitespace or non-participation today.</li>
-            <li><strong>Tax % (effective GGR rate):</strong> simplified operator tax burden for market comparison. Some states use non-GGR constructs (e.g., Tennessee handle tax) or tiered schedules.</li>
-            <li><strong>Handle Tier:</strong> market-size grouping based on annual betting handle (T1 largest, T2 mid, T3 long-tail) used for strategic prioritization.</li>
-            <li><strong>Addressable handle share KPI:</strong> modeled share of total online handle represented by states in view where Fanatics is live or plausible near-term target.</li>
+            <li><strong>Tax % (effective / simplified):</strong> high-level strategy rate for market comparison. Some states use tiered schedules, revenue-share structures, or non-GGR constructs (for example, Tennessee's handle tax).</li>
+            <li><strong>Handle Tier:</strong> internal FBG grouping based on rolling 12M online handle (T1 largest, T2 mid, T3 long-tail); thresholds are directional and refreshed with new reporting.</li>
+            <li><strong>Addressable handle share KPI:</strong> internal modeled share of total online handle represented by states in view where Fanatics is live or a plausible near-term target.</li>
             <li><strong>Live footprint KPI:</strong> Fanatics live states in view divided by legal-online states in view, highlighting penetration and whitespace.</li>
-            <li><strong>Dual-product opportunity KPI:</strong> iGaming-legal states in view where Fanatics is live/targeted, used to prioritize sportsbook→casino cross-sell upside.</li>
+            <li><strong>Casino live footprint KPI:</strong> Fanatics Casino live states in view divided by live iGaming states in view, separating active footprint from pending iGaming regimes.</li>
           </ul>
-          <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling, not statutory legal advice.</p>
+          <p class="caveat">Methodology: rates and tiers are simplified for strategy storytelling; exact statutory tiers, revenue-share structures, surcharges, and offer restrictions should be validated with finance/legal.</p>
         </section>
 
         <section class="card briefs-card">

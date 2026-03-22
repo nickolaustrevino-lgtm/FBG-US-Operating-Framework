@@ -65,6 +65,15 @@ let activeSort = { key: "state", direction: "asc" };
 let lastRenderedRows = [];
 
 const stateBriefOverrides = {
+  Illinois: {
+    snapshot: "Status: Online sports betting legal and live statewide; iGaming remains not yet legalized.",
+    update: "Last notable update: 2025-2026 tax changes pushed Illinois into a more aggressively tiered operator-tax regime.",
+    why: "Why it matters for Fanatics: T1 scale remains attractive, but paid-media and promo strategy need to account for a high-40s effective tax story at the top end.",
+    links: [
+      { label: "Illinois Gaming Board", url: "https://igb.illinois.gov/" },
+      { label: "Legal Sports Report - Illinois", url: "https://www.legalsportsreport.com/illinois/" }
+    ]
+  },
   "New York": {
     snapshot: "Status: Online sports betting legal and live statewide; iGaming remains not yet legalized.",
     update: "Last notable update: 2025–2026 budget cycle includes renewed iGaming debate tied to state revenue pressure.",
@@ -76,11 +85,20 @@ const stateBriefOverrides = {
   },
   Maine: {
     snapshot: "Status: Online sports betting legal; iGaming legalized in 2026 but rollout is pending.",
-    update: "Last notable update: Jan 2026 legalization created a new iGaming pathway with implementation and legal follow-through still developing.",
+    update: "Last notable update: January 2026 legalization created a new iGaming pathway with implementation and legal follow-through still developing.",
     why: "Why it matters for Fanatics: Emerging dual-product state where sports presence can seed casino cross-sell if market access opens.",
     links: [
       { label: "Maine Gambling Control Unit", url: "https://www.maine.gov/dps/mgc/" },
       { label: "Action Network - Maine betting", url: "https://www.actionnetwork.com/online-sports-betting/maine" }
+    ]
+  },
+  Missouri: {
+    snapshot: "Status: Sports betting has been authorized, but statewide online launch is not yet live; iGaming remains not legal.",
+    update: "Last notable update: Missouri should be treated as a pre-launch market rather than an active online sportsbook state.",
+    why: "Why it matters for Fanatics: Useful on the roadmap, but counting Missouri as live today creates an avoidable credibility gap in stakeholder reviews.",
+    links: [
+      { label: "Missouri Gaming Commission", url: "https://www.mgc.dps.mo.gov/" },
+      { label: "Legal Sports Report - Missouri", url: "https://www.legalsportsreport.com/missouri/" }
     ]
   }
 };
@@ -106,8 +124,9 @@ function runFilter(data, filters) {
     if (filters.search && row.state !== filters.search) return false;
     if (filters.sportsStatus !== "all" && row.sports !== filters.sportsStatus) return false;
     if (filters.igamingStatus !== "all") {
-      const shouldHaveIGaming = filters.igamingStatus === "yes";
-      if (row.igaming !== shouldHaveIGaming) return false;
+      if (filters.igamingStatus === "yes" && !row.igaming) return false;
+      if (filters.igamingStatus === "pending" && row.igamingStatus !== "pending") return false;
+      if (filters.igamingStatus === "no" && (row.igaming || row.igamingStatus === "pending")) return false;
     }
     if (filters.region !== "all" && row.region !== filters.region) return false;
     if (filters.fanaticsSportsbook !== "all") {
@@ -127,20 +146,28 @@ function runFilter(data, filters) {
   });
 }
 
-function badgeForSports(sports) {
-  if (sports === "legal") return `<span class="pill legal">Legal</span>`;
-  if (sports === "limited") return `<span class="pill limited">Limited</span>`;
-  return `<span class="pill illegal">Illegal</span>`;
+function displaySports(row) {
+  const badge =
+    row.sports === "legal"
+      ? `<span class="pill legal">Legal</span>`
+      : row.sports === "limited"
+        ? `<span class="pill limited">Limited</span>`
+        : `<span class="pill illegal">Illegal</span>`;
+
+  if (!row.sportsNote) return badge;
+
+  return `<div class="cell-stack">${badge}<small class="cell-note">${escapeHtml(row.sportsNote)}</small></div>`;
 }
 
 function displayOnline(row) {
-  if (!row.online) return "No";
+  if (!row.online) return row.onlineNote ? `No (${row.onlineNote})` : "No";
   return row.onlineNote ? `Yes (${row.onlineNote})` : "Yes";
 }
 
 function displayIGaming(row) {
-  if (row.igamingStatus === "pending") return "Pending";
-  return row.igaming ? "Yes" : "No";
+  if (row.igamingStatus === "pending") return `<span class="pill igaming-pending">Pending</span>`;
+  if (row.igaming) return `<span class="pill igaming-live">Live</span>`;
+  return `<span class="pill igaming-off">Not legal</span>`;
 }
 
 function displayTax(row) {
@@ -193,7 +220,7 @@ function renderRows(rows) {
       <tr>
         <td>${row.state}</td>
         <td>${row.region}</td>
-        <td>${badgeForSports(row.sports)}</td>
+        <td>${displaySports(row)}</td>
         <td>${displayOnline(row)}</td>
         <td>${displayIGaming(row)}</td>
         <td>${displayFanatics(Boolean(row.fanaticsSportsbook))}</td>
@@ -213,8 +240,10 @@ function renderKPIs(rows) {
   const addressableHandleShare = liveOrTargetStates.reduce((sum, row) => sum + (row.handleShare || 0), 0);
   const legalOnlineLiveSportsbook = legalOnlineStates.filter((r) => r.fanaticsSportsbook).length;
   const whitespaceStates = legalOnlineStates.filter((r) => !r.fanaticsSportsbook).length;
-  const igamingLegalStates = stateData.filter((r) => r.igaming || rowIsIGamingPending(r));
-  const dualOpportunityStates = rows.filter((r) => (r.igaming || rowIsIGamingPending(r)) && (r.fanaticsSportsbook || r.fanaticsTarget));
+  const liveIGamingStatesInView = rows.filter((r) => r.igaming);
+  const pendingIGamingStatesInView = rows.filter((r) => rowIsIGamingPending(r));
+  const casinoLiveStates = rows.filter((r) => r.fanaticsCasino);
+  const totalLiveIGamingStates = stateData.filter((r) => r.igaming).length;
 
   elements.statesCount.textContent = `${addressableHandleShare.toFixed(1)}%`;
   elements.statesMeta.textContent = `${totalHandleShare ? Math.round((addressableHandleShare / totalHandleShare) * 100) : 0}% of modeled U.S. online handle`;
@@ -222,14 +251,10 @@ function renderKPIs(rows) {
   elements.onlineCount.textContent = `${legalOnlineLiveSportsbook} of ${legalOnlineStates.length}`;
   elements.onlineMeta.textContent = `${legalOnlineStates.length ? Math.round((legalOnlineLiveSportsbook / legalOnlineStates.length) * 100) : 0}% penetration • whitespace ${whitespaceStates}`;
 
-  elements.igamingCount.textContent = `${dualOpportunityStates.length} of ${igamingLegalStates.length}`;
-  elements.igamingMeta.textContent = `${igamingLegalStates.length ? Math.round((dualOpportunityStates.length / igamingLegalStates.length) * 100) : 0}% of iGaming-legal states`;
+  elements.igamingCount.textContent = `${casinoLiveStates.length} of ${liveIGamingStatesInView.length}`;
+  elements.igamingMeta.textContent = `${liveIGamingStatesInView.length ? Math.round((casinoLiveStates.length / liveIGamingStatesInView.length) * 100) : 0}% of iGaming-live states in view`;
 
-  const casinoLiveStates = rows.filter((r) => r.fanaticsCasino);
-  const totalCasinoLive = stateData.filter((r) => r.fanaticsCasino).length;
-  const igamingLiveStates = rows.filter((r) => r.igaming);
-  const totalIgamingLive = stateData.filter((r) => r.igaming).length;
-  elements.liveShareStats.textContent = `Casino live in view: ${casinoLiveStates.length}/${totalCasinoLive} (${totalCasinoLive ? Math.round((casinoLiveStates.length / totalCasinoLive) * 100) : 0}% of total live casino markets). iGaming live in view: ${igamingLiveStates.length}/${totalIgamingLive} (${totalIgamingLive ? Math.round((igamingLiveStates.length / totalIgamingLive) * 100) : 0}% of total live iGaming markets).`;
+  elements.liveShareStats.textContent = `Casino live in view: ${casinoLiveStates.length}/${liveIGamingStatesInView.length} iGaming-live states (${liveIGamingStatesInView.length ? Math.round((casinoLiveStates.length / liveIGamingStatesInView.length) * 100) : 0}% coverage). Pending iGaming states in view: ${pendingIGamingStatesInView.length}. Total live iGaming jurisdictions in source: ${totalLiveIGamingStates}.`;
 
   const underTax = stateData.filter((r) => r.tax === null || r.tax <= Number(elements.taxMax.value));
   const underTaxLive = underTax.filter((r) => r.fanaticsSportsbook).length;
@@ -243,8 +268,16 @@ function rowIsIGamingPending(row) {
 function getBriefForRow(row) {
   if (stateBriefOverrides[row.state]) return stateBriefOverrides[row.state];
   const igamingDescriptor = row.igaming ? "iGaming legal and live" : row.igamingStatus === "pending" ? "iGaming approved/pending launch" : "iGaming not legal";
+  const sportsDescriptor =
+    row.sports === "legal"
+      ? row.online
+        ? "Online sports legal"
+        : "Sports betting authorized; online launch not yet live"
+      : row.sports === "limited"
+        ? "Limited sports market"
+        : "Sports betting not legal";
   return {
-    snapshot: `Status: ${row.sports === "legal" ? "Online sports legal" : row.sports === "limited" ? "Limited sports market" : "Sports betting not legal"}; ${igamingDescriptor}. Tax: ${displayTax(row)}.`,
+    snapshot: `Status: ${sportsDescriptor}; ${igamingDescriptor}. Tax: ${displayTax(row)}.`,
     update: "Last notable update: monitor state regulator and legislative calendars for 2025–2026 policy movement.",
     why: `Why it matters for Fanatics: ${row.fanaticsSportsbook ? "live sportsbook footprint exists" : row.fanaticsTarget ? "target expansion candidate" : "currently outside near-term footprint"} with handle tier ${displayHandleTier(row)}.`,
     links: [
@@ -275,11 +308,12 @@ function renderPolicyBrief(rows) {
 function renderDerivedStats(rows) {
   const legalOnlineCount = rows.filter((r) => r.online && r.sports === "legal").length;
   const igamingLiveCount = rows.filter((r) => r.igaming).length;
+  const igamingPendingCount = rows.filter((r) => rowIsIGamingPending(r)).length;
   const taxes = rows.filter((r) => r.tax !== null).map((r) => r.tax);
   const highestTax = taxes.length ? Math.max(...taxes) : null;
   const igamingShare = legalOnlineCount ? Math.round((igamingLiveCount / legalOnlineCount) * 100) : 0;
 
-  elements.derivedStats.textContent = `Share of legal-online states with iGaming live: ${igamingLiveCount}/${legalOnlineCount || 0} (${igamingShare}%). Highest tax in view: ${highestTax === null ? "N/A" : `${highestTax}%`}.`;
+  elements.derivedStats.textContent = `Share of legal-online states with iGaming live: ${igamingLiveCount}/${legalOnlineCount || 0} (${igamingShare}%). Pending iGaming states in view: ${igamingPendingCount}. Highest tax in view: ${highestTax === null ? "N/A" : `${highestTax}%`}.`;
 }
 
 function renderPresetNarrative() {
@@ -309,6 +343,7 @@ function renderTableSummary(rows) {
   const liveCasino = rows.filter((r) => r.fanaticsCasino).length;
   const collegeAllowed = rows.filter((r) => r.college === "Allowed").length;
   const igamingLegal = rows.filter((r) => r.igaming).length;
+  const igamingPending = rows.filter((r) => rowIsIGamingPending(r)).length;
   const collegeProhibited = rows.filter((r) => r.college === "No college betting").length;
   const limitedMarkets = rows.filter((r) => r.sports === "limited").length;
   const viewLabel =
@@ -316,7 +351,7 @@ function renderTableSummary(rows) {
       ? "All jurisdictions view"
       : `${activePreset.replace("-", " ")} view`;
 
-  elements.tableSummaryRow.innerHTML = `<td colspan="10"><strong>${viewLabel}</strong> • Avg tax: ${averageTax === "N/A" ? averageTax : `${averageTax}%`} • Jurisdictions: ${rows.length} • Live sportsbook: ${liveSportsbook} • Live casino: ${liveCasino} • iGaming legal: ${igamingLegal} • College allowed: ${collegeAllowed} • College prohibited: ${collegeProhibited} • Limited/state-run: ${limitedMarkets}</td>`;
+  elements.tableSummaryRow.innerHTML = `<td colspan="10"><strong>${viewLabel}</strong> • Avg tax: ${averageTax === "N/A" ? averageTax : `${averageTax}%`} • Jurisdictions: ${rows.length} • Live sportsbook: ${liveSportsbook} • Live casino: ${liveCasino} • iGaming live: ${igamingLegal} • iGaming pending: ${igamingPending} • College allowed: ${collegeAllowed} • College prohibited: ${collegeProhibited} • Limited/state-run: ${limitedMarkets}</td>`;
 }
 
 function renderMajorPolicyCallout(rows) {
@@ -384,7 +419,10 @@ function renderFilterText(filters) {
   const parts = [];
   if (filters.search) parts.push(`Search: "${filters.search}"`);
   if (filters.sportsStatus !== "all") parts.push(`Sports: ${filters.sportsStatus}`);
-  if (filters.igamingStatus !== "all") parts.push(`iGaming: ${filters.igamingStatus}`);
+  if (filters.igamingStatus !== "all") {
+    const igamingLabel = { yes: "live", pending: "pending", no: "not legal" }[filters.igamingStatus] || filters.igamingStatus;
+    parts.push(`iGaming: ${igamingLabel}`);
+  }
   if (filters.region !== "all") parts.push(`Region: ${filters.region}`);
   if (filters.fanaticsSportsbook !== "all") parts.push(`Fanatics Sportsbook: ${filters.fanaticsSportsbook}`);
   if (filters.fanaticsCasino !== "all") parts.push(`Fanatics Casino: ${filters.fanaticsCasino}`);
@@ -392,10 +430,10 @@ function renderFilterText(filters) {
   if (filters.taxMin > 0) parts.push(`Min tax: ${filters.taxMin}%`);
   if (filters.taxMax < 60) parts.push(`Max tax: ${filters.taxMax}%`);
 
-  elements.activeFilterText.textContent = parts.length ? parts.join(" • ") : "No filters applied.";
+  elements.activeFilterText.textContent = parts.length ? parts.join(" • ") : "No filters applied. All 51 jurisdictions (50 states + DC).";
   elements.activeFilterChips.innerHTML = parts.length
     ? parts.map((part) => `<span class="filter-chip">${escapeHtml(part)}</span>`).join("")
-    : `<span class="filter-chip muted">All jurisdictions</span>`;
+    : `<span class="filter-chip muted">All 51 jurisdictions (50 states + DC)</span>`;
 }
 
 function render() {
@@ -469,6 +507,7 @@ async function copySummary() {
   const filtered = runFilter(stateData, filters);
   const onlineSports = filtered.filter((r) => r.online && r.sports === "legal").length;
   const igamingLive = filtered.filter((r) => r.igaming).length;
+  const igamingPending = filtered.filter((r) => rowIsIGamingPending(r)).length;
   const taxRows = filtered.filter((r) => r.tax !== null);
   const avgTax = taxRows.length ? (taxRows.reduce((sum, row) => sum + row.tax, 0) / taxRows.length).toFixed(1) : "N/A";
   const tierMix = {
@@ -476,7 +515,7 @@ async function copySummary() {
     T2: filtered.filter((r) => r.handleTier === "T2").length,
     T3: filtered.filter((r) => r.handleTier === "T3").length
   };
-  const summary = `Filter: ${elements.activeFilterText.textContent}. ${filtered.length} jurisdictions in view, ${onlineSports} legal online sports, ${igamingLive} iGaming live, avg tax ${avgTax === "N/A" ? avgTax : `${avgTax}%`}, tier mix: ${tierMix.T1} T1 / ${tierMix.T2} T2 / ${tierMix.T3} T3.`;
+  const summary = `Filter: ${elements.activeFilterText.textContent}. ${filtered.length} jurisdictions in view, ${onlineSports} legal online sports, ${igamingLive} iGaming live, ${igamingPending} iGaming pending, avg tax ${avgTax === "N/A" ? avgTax : `${avgTax}%`}, tier mix: ${tierMix.T1} T1 / ${tierMix.T2} T2 / ${tierMix.T3} T3.`;
 
   try {
     await navigator.clipboard.writeText(summary);

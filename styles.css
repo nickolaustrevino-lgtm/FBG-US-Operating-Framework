@@ -106,6 +106,17 @@ h1 {
   color: #52525b !important;
 }
 
+.strategy-callout {
+  margin-top: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.7rem;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #881337;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
 .howto-examples {
   font-size: 0.82rem !important;
   color: #4b5563 !important;
@@ -343,6 +354,22 @@ button.ghost {
   overflow: auto;
 }
 
+.table-footnotes {
+  padding: 0.75rem 1rem 0.95rem;
+  border-top: 1px solid #ececf0;
+  background: #fcfcfd;
+}
+
+.table-footnote {
+  font-size: 0.78rem !important;
+  color: #5b6473 !important;
+  line-height: 1.45;
+}
+
+.table-footnote + .table-footnote {
+  margin-top: 0.28rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -354,6 +381,7 @@ td {
   padding: 0.72rem 0.9rem;
   border-bottom: 1px solid #ececf0;
   font-size: 0.9rem;
+  vertical-align: top;
 }
 
 th {
@@ -412,6 +440,32 @@ th {
 .pill.fanatics-off {
   color: #374151;
   background: #e5e7eb;
+}
+
+.pill.igaming-live {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.pill.igaming-pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.pill.igaming-off {
+  color: #374151;
+  background: #e5e7eb;
+}
+
+.cell-stack {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.cell-note {
+  color: #6b7280;
+  font-size: 0.72rem;
+  line-height: 1.35;
 }
 
 .tax-high {
